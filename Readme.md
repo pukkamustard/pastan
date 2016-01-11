@@ -1,6 +1,6 @@
 # pastan
 
-A cloud based music streaming service.
+Your music library in the cloud.
 
 This is the idea:
 - Sync your local beets (http://beets.io/) library to the cloud (Amazon S3).
