@@ -2,7 +2,7 @@
   "name": "pastan-service",
   "version": "0.0.1",
   "description": "Your music library in the cloud.",
-  "main": "app/index.js",
+  "main": "app/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
