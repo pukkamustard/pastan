@@ -6,6 +6,7 @@ import tempfile
 from boto3.s3.transfer import S3Transfer
 
 import json
+import mimetypes
 
 
 class Pastan(BeetsPlugin):
@@ -51,10 +52,12 @@ class Pastan(BeetsPlugin):
             json.dump(self.db, outfile)
         self.s3transfer.upload_file(self.db_path, self.bucket_name, 'db.json')
 
-    def post(self, lib_item):
+    def upload(self, lib_item):
         path = lib_item.path
+        (ctype, encoding) = mimetypes.guess_type(path)
         print "Uploading: ", lib_item.artist, " - ", lib_item.title, "(", lib_item.id, ")"
-        self.s3transfer.upload_file(path, self.bucket_name, str(lib_item.id))
+        self.s3transfer.upload_file(path, self.bucket_name, str(lib_item.id),
+                                    extra_args={'ContentType': ctype})
 
         keys = lib_item.keys()
         new_item = {}
@@ -70,10 +73,10 @@ class Pastan(BeetsPlugin):
             id = str(lib_item.id)
             if id in items:
                 item = items[id]
-                if (item["mtime"] < lib_item.mtime):
-                    self.post(lib_item)
+                if ((item["mtime"] - 10) < lib_item.mtime):
+                    self.upload(lib_item)
             else:
-                self.post(lib_item)
+                self.upload(lib_item)
 
     def sync_albums(self, lib):
         self.db['albums'] = {}
