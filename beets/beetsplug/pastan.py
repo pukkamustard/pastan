@@ -64,7 +64,7 @@ class Pastan(BeetsPlugin):
         else:
             self.items.insert(new_item)
 
-    def sync(self, lib):
+    def sync_items(self, lib):
         lib_items = lib.items()
         for lib_item in lib_items:
             if self.items.contains(where('id') == lib_item.id):
@@ -76,6 +76,6 @@ class Pastan(BeetsPlugin):
 
     def pastan(self, lib, opts, args):
         self.before()
-        self.sync(lib)
+        self.sync_items(lib)
         print "Hello my name is Pastan!"
         self.after()
