@@ -53,7 +53,7 @@ class Pastan(BeetsPlugin):
 
     def post(self, lib_item):
         path = lib_item.path
-        print lib_item.id, ": ", lib_item.artist, " - ", lib_item.title
+        print "Uploading: ", lib_item.artist, " - ", lib_item.title, "(", lib_item.id, ")"
         self.s3transfer.upload_file(path, self.bucket_name, str(lib_item.id))
 
         keys = lib_item.keys()
@@ -75,9 +75,17 @@ class Pastan(BeetsPlugin):
             else:
                 self.post(lib_item)
 
+    def sync_albums(self, lib):
+        self.db['albums'] = {}
+        for album in lib.albums():
+            keys = album.keys()
+            a = {}
+            for key in keys:
+                a[key] = album[key]
+            self.db['albums'][album.id] = a
+
     def pastan(self, lib, opts, args):
         self.before()
         self.sync_items(lib)
-        # pprint.pprint(self.db)
-        # print "Hello my name is Pastan!"
+        self.sync_albums(lib)
         self.after()
