@@ -4,7 +4,8 @@ from beets.ui import Subcommand
 import boto3
 import tempfile
 from boto3.s3.transfer import S3Transfer
-from tinydb import TinyDB, where
+
+import json
 
 
 class Pastan(BeetsPlugin):
@@ -35,21 +36,22 @@ class Pastan(BeetsPlugin):
     def getDB(self):
         self._temp = tempfile.NamedTemporaryFile()
         self.db_path = self._temp.name
+        # self.db_path = "db.json"
         print self._temp.name
         try:
             self.s3transfer.download_file(
                 self.bucket_name, 'db.json', self.db_path)
+            with open(self.db_path) as data_file:
+                self.db = json.load(data_file)
         except:
-            pass
-
-        self.db = TinyDB(self.db_path)
-        self.items = self.db.table("items")
+            self.db = {'items': {}}
 
     def saveDB(self):
-        self.db.close()
+        with open(self.db_path, 'w') as outfile:
+            json.dump(self.db, outfile)
         self.s3transfer.upload_file(self.db_path, self.bucket_name, 'db.json')
 
-    def post(self, lib_item, item=None):
+    def post(self, lib_item):
         path = lib_item.path
         print lib_item.id, ": ", lib_item.artist, " - ", lib_item.title
         self.s3transfer.upload_file(path, self.bucket_name, str(lib_item.id))
@@ -59,23 +61,23 @@ class Pastan(BeetsPlugin):
         for key in keys:
             new_item[key] = lib_item[key]
 
-        if item:
-            self.items.update(new_item, where('id') == new_item.id)
-        else:
-            self.items.insert(new_item)
+        self.db['items'][lib_item.id] = new_item
 
     def sync_items(self, lib):
         lib_items = lib.items()
+        items = self.db['items']
         for lib_item in lib_items:
-            if self.items.contains(where('id') == lib_item.id):
-                item = self.items.get(where('id') == lib_item.id)
+            id = str(lib_item.id)
+            if id in items:
+                item = items[id]
                 if (item["mtime"] < lib_item.mtime):
-                    self.post(lib_item, item)
+                    self.post(lib_item)
             else:
                 self.post(lib_item)
 
     def pastan(self, lib, opts, args):
         self.before()
         self.sync_items(lib)
-        print "Hello my name is Pastan!"
+        # pprint.pprint(self.db)
+        # print "Hello my name is Pastan!"
         self.after()
