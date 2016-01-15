@@ -5,6 +5,8 @@ var s3 = require('./s3');
 
 s3.getDb().then(function(db) {
     app.set('db', db);
+}).catch(function(error) {
+    console.error(error);
 });
 
 
