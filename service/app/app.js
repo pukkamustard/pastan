@@ -6,6 +6,7 @@ var s3 = require('./s3');
 
 s3.getDb().then(function(db) {
     app.set('db', db);
+    console.log("DB received.");
 }).catch(function(error) {
     console.error(error);
 });
@@ -14,14 +15,17 @@ s3.getDb().then(function(db) {
 app.use(cors());
 
 app.get('/', function(req, res) {
-    res.send('Hello my name is Pastan!');
+    res.json({msg: 'Hello my name is Pastan!'});
 });
 
 var items = require('./routes/items');
 app.use('/items', items);
 
-var items = require('./routes/albums');
-app.use('/albums', items);
+var albums = require('./routes/albums');
+app.use('/albums', albums);
+
+var stats = require('./routes/stats');
+app.use('/stats', stats)
 
 // development error handler
 // will print stacktrace
