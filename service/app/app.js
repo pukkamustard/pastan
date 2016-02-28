@@ -1,4 +1,5 @@
 var express = require('express');
+var cors = require('cors');
 var app = express();
 
 var s3 = require('./s3');
@@ -9,6 +10,8 @@ s3.getDb().then(function(db) {
     console.error(error);
 });
 
+// enable cors
+app.use(cors());
 
 app.get('/', function(req, res) {
     res.send('Hello my name is Pastan!');
