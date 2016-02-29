@@ -15,7 +15,9 @@ s3.getDb().then(function(db) {
 app.use(cors());
 
 app.get('/', function(req, res) {
-    res.json({msg: 'Hello my name is Pastan!'});
+    res.json({
+        msg: 'Hello my name is Pastan!'
+    });
 });
 
 var items = require('./routes/items');
@@ -23,6 +25,10 @@ app.use('/items', items);
 
 var albums = require('./routes/albums');
 app.use('/albums', albums);
+
+// Beets Web plugin compatibility
+// app.use('/item', items);
+// app.use('/album', albums);
 
 var stats = require('./routes/stats');
 app.use('/stats', stats);

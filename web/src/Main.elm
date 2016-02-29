@@ -1,95 +1,39 @@
 module Main (..) where
 
-import Char
-import Html exposing (..)
-import Html.Attributes as Attr exposing (..)
-import Html.Events exposing (..)
+import Item exposing (Item)
+import View
+import Html exposing (Html)
+import Signal exposing (Signal)
+import Task exposing (Task, andThen)
 import Http
 import Json.Decode as Json exposing ((:=))
-import String
-import Task exposing (..)
 
 
--- VIEW
-
-
-view : String -> Result String (List String) -> Html
-view string result =
-  let
-    field =
-      input
-        [ placeholder "Zip Code"
-        , value string
-        , on "input" targetValue (Signal.message query.address)
-        , myStyle
-        ]
-        []
-
-    messages =
-      case result of
-        Err msg ->
-          [ div [ myStyle ] [ text msg ] ]
-
-        Ok cities ->
-          List.map (\city -> div [ myStyle ] [ text city ]) cities
-  in
-    div [] (field :: messages)
-
-
-myStyle : Attribute
-myStyle =
-  style
-    [ ( "width", "100%" )
-    , ( "height", "40px" )
-    , ( "padding", "10px 0" )
-    , ( "font-size", "2em" )
-    , ( "text-align", "center" )
-    ]
-
-
-
--- WIRING
-
-
+main : Signal Html
 main =
-  Signal.map2 view query.signal results.signal
+  Signal.map View.items list.signal
 
 
-query : Signal.Mailbox String
-query =
-  Signal.mailbox ""
+list : Signal.Mailbox (List Item)
+list =
+  Signal.mailbox []
 
 
-results : Signal.Mailbox (Result String (List String))
-results =
-  Signal.mailbox (Err "A valid US zip code is 5 numbers.")
+report : List Item -> Task x ()
+report items =
+  Signal.send list.address items
 
 
-port requests : Signal (Task x ())
-port requests =
-  Signal.map lookupZipCode query.signal
-    |> Signal.map (\task -> Task.toResult task `andThen` Signal.send results.address)
+port fetch : Task Http.Error ()
+port fetch =
+  Http.get items url `andThen` report
 
 
-lookupZipCode : String -> Task String (List String)
-lookupZipCode query =
-  let
-    toUrl =
-      if String.length query == 1 && String.all Char.isDigit query then
-        succeed ("http://localhost:8338/items/" ++ query)
-      else
-        fail "Give me a valid US zi code!"
-  in
-    toUrl `andThen` (mapError (always "Not found :(") << Http.get places)
+items : Json.Decoder (List Item)
+items =
+  Json.list Item.decode
 
 
-places : Json.Decoder (List String)
-places =
-  let
-    place =
-      Json.object2
-        (\city state -> city ++ ", " ++ state)
-        ("albumartist" := Json.string)
-        ("title" := Json.string)
-  in
-    "places" := Json.list place
+url : String
+url =
+  "http://localhost:8338/items"
