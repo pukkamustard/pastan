@@ -28,13 +28,11 @@ router.route('/:id')
         res.json(req.item);
     });
 
-router.route('/:id/url')
+router.route('/:id/file')
     .get(function(req, res, next) {
         return s3.getUrl(req.item)
             .then(function(url) {
-                res.json({
-                    url: url
-                });
+                return res.redirect(url);
             });
     });
 
