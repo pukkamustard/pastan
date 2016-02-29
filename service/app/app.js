@@ -25,7 +25,7 @@ var albums = require('./routes/albums');
 app.use('/albums', albums);
 
 var stats = require('./routes/stats');
-app.use('/stats', stats)
+app.use('/stats', stats);
 
 // development error handler
 // will print stacktrace
