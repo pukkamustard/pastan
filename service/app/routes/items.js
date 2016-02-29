@@ -6,7 +6,14 @@ var s3 = require('../s3');
 router.route('/')
     .get(function(req, res, next) {
         var db = req.app.get('db');
-        res.json(db.items);
+
+        var keys = Object.keys(db.items);
+        var items = [];
+        for (var i = 0; i < keys.length; i++) {
+            items.push(db.items[keys[i]]);
+        }
+
+        res.json(items);
     });
 
 router.param('id', function(req, res, next, id) {

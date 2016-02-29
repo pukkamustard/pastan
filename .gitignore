@@ -1,2 +1,4 @@
 service/node_modules
 .env
+web/elm-stuff
+elm.js
