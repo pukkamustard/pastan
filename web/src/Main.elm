@@ -1,15 +1,16 @@
 module Main (..) where
 
-import Effects exposing (Never)
+import Effects exposing (Never, Effects)
 import Html exposing (Html)
 import StartApp exposing (start)
 import Task
-import Model
-import Update exposing (update)
+import Update exposing (update, Action)
 import View exposing (view)
 import Pastan
+import Model exposing (Model)
+import Page exposing (Page(..))
 
-
+app : StartApp.App Model
 app =
   start
     { init = init
@@ -18,9 +19,9 @@ app =
     , inputs = []
     }
 
-
+init : (Model, Effects Action)
 init =
-  ( { items = [], queue = [] }, Pastan.getItems )
+  ( { items = [], queue = [], currentPage = PageItems }, Pastan.getItems )
 
 
 main : Signal Html

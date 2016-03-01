@@ -1,14 +1,11 @@
 module Model (..) where
 
 import Item exposing (Item)
-import Effects exposing (Effects)
+import Page exposing (Page)
 
 
 type alias Model =
   { items : List Item
   , queue : List Item
+  , currentPage : Page
   }
-
-
-
--- init : ( Model, Effects Action )

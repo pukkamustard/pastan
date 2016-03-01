@@ -1,0 +1,17 @@
+ .item-add .icon-add {
+     display: none;
+ }
+ .item-add:hover .icon-note, .item-add:active .icon-note {
+     display: none;
+ }
+ .item-add:hover .icon-add, .item-add:active .icon-add {
+     display: block;
+ }
+ .item-add {
+     background-color: inherit;
+     transition: background-color 0.5s;
+ }
+ .item-add:active {
+     background-color: black;
+     transition: background-color 0s;
+ }
