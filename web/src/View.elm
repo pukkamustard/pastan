@@ -7,15 +7,37 @@ import List
 import Signal
 import Model exposing (Model)
 import Update exposing (Action(..))
+import Material.Icons.Image exposing (music_note)
+import Svg
+import Svg.Attributes
+import Color
 
 
 item : Item -> Html
 item i =
-  Html.div
-    [ myStyle ]
-    [ Html.h4 [] [ Html.text (i.artist ++ " - " ++ i.title) ]
-    , Html.a [ Attributes.href (Item.fileUrl i) ] [ Html.text "file" ]
+  Html.li
+    [ Attributes.class "media" ]
+    [ Html.div [ Attributes.class "media-left" ] [ itemIcon ]
+    , Html.div
+        [ Attributes.class "media-body" ]
+        [ Html.h4 [ Attributes.class "media-heading" ] [ Html.text (i.artist ++ " - " ++ i.title) ]
+        , Html.a [ Attributes.href (Item.fileUrl i) ] [ Html.text "file" ]
+        ]
     ]
+
+
+itemIcon : Html
+itemIcon =
+  let
+    size =
+      48
+  in
+    Svg.svg
+      [ Svg.Attributes.class "media-object"
+      , Svg.Attributes.width (toString size)
+      , Svg.Attributes.height (toString size)
+      ]
+      [ music_note Color.gray size ]
 
 
 myStyle : Attribute
@@ -28,8 +50,8 @@ myStyle =
 
 items : List Item -> Html
 items list =
-  Html.div
-    []
+  Html.ul
+    [ Attributes.class "list-group" ]
     (List.map item list)
 
 
