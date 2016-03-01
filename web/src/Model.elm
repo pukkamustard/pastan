@@ -6,7 +6,9 @@ import Effects exposing (Effects)
 
 type alias Model =
   { items : List Item
+  , queue : List Item
   }
+
 
 
 -- init : ( Model, Effects Action )

@@ -1,0 +1,11 @@
+.items {
+    height: 100vh;
+    width: 40vw;
+    padding: 20px;
+    overflow: scroll;
+}
+
+.item {
+    border-radius: 25px;
+    background-color: lightgrey;
+}

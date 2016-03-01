@@ -20,7 +20,7 @@ app =
 
 
 init =
-  ( { items = [] }, Pastan.getItems )
+  ( { items = [], queue = [] }, Pastan.getItems )
 
 
 main : Signal Html
