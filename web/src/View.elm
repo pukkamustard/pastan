@@ -43,7 +43,7 @@ itemIcon =
       , Svg.Attributes.width (toString size)
       , Svg.Attributes.height (toString size)
       ]
-      [ music_note Color.white size ]
+      [ music_note Color.grey size ]
 
 
 items : Signal.Address Action -> List Item -> Html
@@ -60,10 +60,40 @@ queue address list =
     (List.map (item address) list)
 
 
+menu : Signal.Address Action -> Model -> Html
+menu address model =
+  Html.div
+    [ Attributes.id "sidebar-wrapper" ]
+    [ Html.ul
+        [ Attributes.class "sidebar-nav" ]
+        [ Html.li [ Attributes.class "sidebar-brand" ] [Html.h2 [] [ Html.text "Pastan" ]]
+        , Html.li [] [ Html.a [ Attributes.href "#" ] [ Html.text "Queue" ] ]
+        , Html.li [] [ Html.h4 [] [Html.text "Library"] ]
+        , Html.li [Attributes.class "active"] [ Html.a [ Attributes.href "#", Attributes.class "active" ] [ Html.text "Items" ] ]
+        ]
+    ]
+
+
+page : Signal.Address Action -> Model -> Html
+page address model =
+  Html.div
+    [ Attributes.id "page-content-wrapper" ]
+    [ Html.div
+        [ Attributes.class "container-fluid" ]
+        [ Html.div
+            [ Attributes.class "row" ]
+            [ Html.div
+                [ Attributes.class "col-md-12" ]
+                [ (items address model.items) ]
+            ]
+        ]
+    ]
+
+
 view : Signal.Address Action -> Model -> Html
 view address model =
   Html.div
-    [ Attributes.class "row" ]
-    [ items address model.items
-    , queue address model.queue
+    []
+    [ menu address model
+    , page address model
     ]
