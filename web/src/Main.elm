@@ -1,39 +1,33 @@
 module Main (..) where
 
-import Item exposing (Item)
-import View
+import Effects exposing (Never)
 import Html exposing (Html)
-import Signal exposing (Signal)
-import Task exposing (Task, andThen)
-import Http
-import Json.Decode as Json exposing ((:=))
+import StartApp exposing (start)
+import Task
+import Model
+import Update exposing (update)
+import View exposing (view)
+import Pastan
+
+
+app =
+  start
+    { init = init
+    , update = update
+    , view = view
+    , inputs = []
+    }
+
+
+init =
+  ( { items = [] }, Pastan.getItems )
 
 
 main : Signal Html
 main =
-  Signal.map View.items list.signal
+  app.html
 
 
-list : Signal.Mailbox (List Item)
-list =
-  Signal.mailbox []
-
-
-report : List Item -> Task x ()
-report items =
-  Signal.send list.address items
-
-
-port fetch : Task Http.Error ()
-port fetch =
-  Http.get items url `andThen` report
-
-
-items : Json.Decoder (List Item)
-items =
-  Json.list Item.decode
-
-
-url : String
-url =
-  "http://localhost:8338/items"
+port tasks : Signal (Task.Task Never ())
+port tasks =
+  app.tasks

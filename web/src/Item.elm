@@ -19,6 +19,11 @@ decode =
     ("title" := Json.string)
 
 
+decodeList : Json.Decoder (List Item)
+decodeList =
+  Json.list decode
+
+
 fileUrl : Item -> String
 fileUrl i =
   "http://localhost:8338/items/" ++ (toString i.id) ++ "/file"
