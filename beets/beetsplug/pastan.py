@@ -73,7 +73,7 @@ class Pastan(BeetsPlugin):
             id = str(lib_item.id)
             if id in items:
                 item = items[id]
-                if ((item["mtime"] - 10) < lib_item.mtime):
+                if (item["mtime"] < lib_item.mtime):
                     self.upload(lib_item)
             else:
                 self.upload(lib_item)
