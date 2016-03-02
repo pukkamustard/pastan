@@ -41,8 +41,10 @@ class Pastan(BeetsPlugin):
                 raw_db_item = db.items.get(id)
                 if raw_db_item:
                     db_item = json.loads(raw_db_item)
+                    # if already exists check modification time
                     if (db_item["mtime"] < item.mtime):
                         self.update_item(db, item)
+                    # TODO: check if item is on S3
                 else:
                     self.update_item(db, item)
 
@@ -50,8 +52,6 @@ class Pastan(BeetsPlugin):
         # Set up connection to S3 and retrieve/initalize DB
         self.s3 = s3client(self.config)
         self.s3bucket = unicode(self.config['s3_bucket'])
-
-        # self.db = PastanDB(self.s3, self.s3bucket)
 
         print "Hello, my name is Pastan."
         self.sync_items(lib)
@@ -97,7 +97,7 @@ class PastanDB:
     def _open(self):
         if DB_OFFLINE:
             db = plyvel.DB(OFFLINE_DB_PATH, create_if_missing=True)
-            items = db.prefixed_db(b'items-')
+            items = db.prefixed_db(b'!items!')
             return db, items
         else:
             self._path = tempfile.mkdtemp()

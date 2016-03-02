@@ -1,32 +1,37 @@
 var express = require('express');
 var router = express.Router();
+var JSONStream = require('JSONStream');
 
+var pastandb = require('../pastandb');
+var queryparser = require('../queryparser');
 var s3 = require('../s3');
 
 router.route('/')
-    .get(function(req, res, next) {
+    .get(queryparser, function(req, res, next) {
         var db = req.app.get('db');
 
-        var keys = Object.keys(db.items);
-        var items = [];
-        for (var i = 0; i < keys.length; i++) {
-            items.push(db.items[keys[i]]);
-        }
+        res.setHeader("content-type", "application/json");
+        pastandb
+            .items(db, req.mongoq)
+            .pipe(JSONStream.stringify())
+            .pipe(res);
 
-        res.json(items);
     });
 
 router.param('id', function(req, res, next, id) {
-    var items = req.app.get('db').items;
+    var db = req.app.get('db');
 
-    if (id in items) {
-        req.item = items[id];
+    pastandb.item(db, id, function(err, item) {
+        if (err) {
+            if (err.notFound) {
+                err.status = 404;
+                return next(err);
+            }
+            return next(err);
+        }
+        req.item = item;
         return next();
-    } else {
-        var err = new Error('Item not found.');
-        err.status = 404;
-        return next(err);
-    }
+    });
 });
 
 
