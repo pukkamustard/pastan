@@ -5,7 +5,12 @@ var app = express();
 var pastan = require('./pastan');
 
 // Initialize db
-app.set('db', pastan.open());
+pastan.open(function(err, db) {
+    if (err)
+        console.log("Error while opening db.");
+    console.log("db ready.");
+    app.set('db', db);
+});
 
 // enable cors
 app.use(cors());

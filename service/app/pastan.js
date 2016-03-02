@@ -1,22 +1,31 @@
 var levelup = require('levelup');
 var sublevel = require('sublevelup');
 
+var tar = require('tar-fs');
+var temp = require('temp').track();
+
 var jsonquery = require('jsonquery');
 var hrq2mongoq = require('hrq2mongoq');
 
-var OFFLINE_DB_PATH = '/tmp/pastan/db/';
-
 var AWS = require('aws-sdk');
-
 var s3 = new AWS.S3({
     params: {
         Bucket: process.env.PASTAN_S3_BUCKET
     }
 });
 
-
-function open() {
-    return sublevel(levelup(OFFLINE_DB_PATH));
+function open(cb) {
+    var params = {
+        Key: 'db.tar'
+    };
+    return temp.mkdir("pastan", function(err, path) {
+        return s3.getObject(params)
+            .createReadStream()
+            .pipe(tar.extract(path))
+            .on('finish', function() {
+                cb(null, sublevel(levelup(path + '/db')));
+            });
+    });
 }
 
 

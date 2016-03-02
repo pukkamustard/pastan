@@ -43,7 +43,7 @@ router.route('/:id/file')
     .get(function(req, res, next) {
         pastan.url(req.item, function(err, url) {
             if (err)
-                next(err)
+                next(err);
             return res.redirect(url);
         });
     });
