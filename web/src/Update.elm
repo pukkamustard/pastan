@@ -4,12 +4,14 @@ import List
 import Effects exposing (Effects)
 import Model exposing (Model)
 import Item exposing (Item)
+import Album exposing (Album)
 import Page exposing (Page)
 
 
 type Action
   = NoOp
-  | UpdateItems (Maybe (List Item))
+  | ReceivedItems (Maybe (List Item))
+  | ReceivedAlbums (Maybe (List Album))
   | AddToQueue Item
   | ChangePage Page
 
@@ -17,8 +19,11 @@ type Action
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
-    UpdateItems maybeItems ->
+    ReceivedItems maybeItems ->
       ( { model | items = Maybe.withDefault model.items maybeItems }, Effects.none )
+
+    ReceivedAlbums maybeAlbums ->
+      ( { model | albums = Maybe.withDefault model.albums maybeAlbums}, Effects.none )
 
     AddToQueue item ->
       ( { model | queue = List.append model.queue [ item ] }, Effects.none )

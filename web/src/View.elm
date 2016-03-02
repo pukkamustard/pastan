@@ -8,6 +8,7 @@ import Model exposing (Model)
 import Update exposing (Action(..))
 import Page exposing (Page(..))
 import Page.Items
+import Page.Albums
 import Page.Queue
 
 
@@ -21,6 +22,7 @@ menu address model =
         , Html.li [ changePage address PageQueue ] [ Html.a [ active model PageQueue ] [ Html.text "Queue" ] ]
         , Html.li [] [ Html.h4 [] [ Html.text "Library" ] ]
         , Html.li [ changePage address PageItems ] [ Html.a [ active model PageItems ] [ Html.text "Items" ] ]
+        , Html.li [ changePage address PageAlbums ] [ Html.a [ active model PageAlbums ] [ Html.text "Albums" ] ]
         ]
     ]
 
@@ -41,6 +43,9 @@ page address model =
     <| case model.currentPage of
         PageItems ->
           [ Page.Items.view address model ]
+
+        PageAlbums ->
+          [ Page.Albums.view address model ]
 
         PageQueue ->
           [ Page.Queue.view address model ]

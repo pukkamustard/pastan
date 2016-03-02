@@ -10,6 +10,7 @@ import Pastan
 import Model exposing (Model)
 import Page exposing (Page(..))
 
+
 app : StartApp.App Model
 app =
   start
@@ -19,9 +20,10 @@ app =
     , inputs = []
     }
 
-init : (Model, Effects Action)
+
+init : ( Model, Effects Action )
 init =
-  ( { items = [], queue = [], currentPage = PageItems }, Pastan.getItems )
+  ( { items = [], albums = [], queue = [], currentPage = PageItems }, Effects.batch [ Pastan.getItems, Pastan.getAlbums ] )
 
 
 main : Signal Html
