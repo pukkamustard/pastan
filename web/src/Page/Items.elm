@@ -49,7 +49,7 @@ itemIcon address i =
     size =
       48
   in
-    Html.a
+    Html.div
       [ Attributes.class "media-object item-add", addToQueue address i ]
       [ Svg.svg
           [ Svg.Attributes.class "icon-note"
