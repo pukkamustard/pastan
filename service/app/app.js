@@ -24,8 +24,8 @@ app.get('/', function(req, res) {
 var items = require('./routes/items');
 app.use('/items', items);
 
-// var albums = require('./routes/albums');
-// app.use('/albums', albums);
+var albums = require('./routes/albums');
+app.use('/albums', albums);
 
 // development error handler
 // will print stacktrace

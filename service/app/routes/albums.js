@@ -1,25 +1,36 @@
 var express = require('express');
 var router = express.Router();
+var JSONStream = require('JSONStream');
 
-var s3 = require('../s3');
+var pastan = require('../pastan');
+var queryparser = require('../queryparser');
 
 router.route('/')
-    .get(function(req, res, next) {
+    .get(queryparser, function(req, res, next) {
         var db = req.app.get('db');
-        res.json(db.albums);
+
+        res.setHeader("content-type", "application/json");
+        pastan
+            .albums(db, req.mongoq)
+            .pipe(JSONStream.stringify())
+            .pipe(res);
+
     });
 
 router.param('id', function(req, res, next, id) {
-    var albums = req.app.get('db').albums;
+    var db = req.app.get('db');
 
-    if (id in albums) {
-        req.album = albums[id];
+    pastan.album(db, id, function(err, album) {
+        if (err) {
+            if (err.notFound) {
+                err.status = 404;
+                return next(err);
+            }
+            return next(err);
+        }
+        req.album = album;
         return next();
-    } else {
-        var err = new Error('Album not found.');
-        err.status = 404;
-        return next(err);
-    }
+    });
 });
 
 

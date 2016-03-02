@@ -54,6 +54,12 @@ class Pastan(BeetsPlugin):
                     db.save()
                     counter = 0
 
+    def sync_albums(self, lib):
+        with PastanDB(self.s3, self.s3bucket) as db:
+            for album in lib.albums():
+                id = str(album.id)
+                db.albums.put(id, json.dumps(serialize(album)))
+
     def pastan(self, lib, opts, args):
         # Set up connection to S3 and retrieve/initalize DB
         self.s3 = s3client(self.config)
@@ -61,7 +67,7 @@ class Pastan(BeetsPlugin):
 
         print "Hello, my name is Pastan."
         self.sync_items(lib)
-        # self.sync_albums(lib)
+        self.sync_albums(lib)
 
 
 def s3client(config):
@@ -126,6 +132,7 @@ class PastanDB:
 
         self._db = plyvel.DB(self._path + "/db", create_if_missing=True)
         self.items = self._db.prefixed_db(b'!items!')
+        self.albums = self._db.prefixed_db(b'!albums!')
 
     def _download(self):
         tar_path = self._path + "/db.tar"

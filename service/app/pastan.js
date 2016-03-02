@@ -51,9 +51,27 @@ function items(db, query) {
         .pipe(jsonquery(query));
 }
 
+function album(db, id, cb) {
+    return db.sublevel('albums').get(id, {
+        valueEncoding: 'json'
+    }, cb);
+}
+
+function albums(db, query) {
+    query = query || {};
+    return db.sublevel('albums')
+        .createValueStream({
+            valueEncoding: 'json',
+        })
+        .pipe(jsonquery(query));
+}
+
+
 module.exports = {
     items: items,
     item: item,
     url: url,
+    albums: albums,
+    album: album,
     open: open
 };
