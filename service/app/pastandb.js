@@ -4,7 +4,15 @@ var sublevel = require('sublevelup');
 var jsonquery = require('jsonquery');
 var hrq2mongoq = require('hrq2mongoq');
 
-var OFFLINE_DB_PATH = '/tmp/pastan/';
+var OFFLINE_DB_PATH = '/tmp/pastan/db/';
+
+var AWS = require('aws-sdk');
+
+var s3 = new AWS.S3({
+    params: {
+        Bucket: process.env.PASTAN_S3_BUCKET
+    }
+});
 
 
 function open() {
@@ -16,6 +24,13 @@ function item(db, id, cb) {
     return db.sublevel('items').get(id, {
         valueEncoding: 'json'
     }, cb);
+}
+
+function url(item, cb) {
+    var params = {
+        Key: String(item.id)
+    };
+    return s3.getSignedUrl('getObject', params, cb);
 }
 
 function items(db, query) {
@@ -30,5 +45,6 @@ function items(db, query) {
 module.exports = {
     items: items,
     item: item,
+    url: url,
     open: open
 };

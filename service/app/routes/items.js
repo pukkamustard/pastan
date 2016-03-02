@@ -4,7 +4,6 @@ var JSONStream = require('JSONStream');
 
 var pastandb = require('../pastandb');
 var queryparser = require('../queryparser');
-var s3 = require('../s3');
 
 router.route('/')
     .get(queryparser, function(req, res, next) {
@@ -42,10 +41,11 @@ router.route('/:id')
 
 router.route('/:id/file')
     .get(function(req, res, next) {
-        return s3.getUrl(req.item)
-            .then(function(url) {
-                return res.redirect(url);
-            });
+        pastandb.url(req.item, function(err, url) {
+            if (err)
+                next(err)
+            return res.redirect(url);
+        });
     });
 
 module.exports = router;
