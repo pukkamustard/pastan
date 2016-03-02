@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var JSONStream = require('JSONStream');
 
-var pastandb = require('../pastandb');
+var pastan = require('../pastan');
 var queryparser = require('../queryparser');
 
 router.route('/')
@@ -10,7 +10,7 @@ router.route('/')
         var db = req.app.get('db');
 
         res.setHeader("content-type", "application/json");
-        pastandb
+        pastan
             .items(db, req.mongoq)
             .pipe(JSONStream.stringify())
             .pipe(res);
@@ -20,7 +20,7 @@ router.route('/')
 router.param('id', function(req, res, next, id) {
     var db = req.app.get('db');
 
-    pastandb.item(db, id, function(err, item) {
+    pastan.item(db, id, function(err, item) {
         if (err) {
             if (err.notFound) {
                 err.status = 404;
@@ -41,7 +41,7 @@ router.route('/:id')
 
 router.route('/:id/file')
     .get(function(req, res, next) {
-        pastandb.url(req.item, function(err, url) {
+        pastan.url(req.item, function(err, url) {
             if (err)
                 next(err)
             return res.redirect(url);

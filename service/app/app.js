@@ -2,10 +2,10 @@ var express = require('express');
 var cors = require('cors');
 var app = express();
 
-var pastandb = require('./pastandb');
+var pastan = require('./pastan');
 
 // Initialize db
-app.set('db', pastandb.open());
+app.set('db', pastan.open());
 
 // enable cors
 app.use(cors());
