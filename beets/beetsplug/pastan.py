@@ -28,12 +28,13 @@ class Pastan(BeetsPlugin):
 
     def update_item(self, db, item):
         print item.artist, " - ", item.title, " (", item.id, ")"
-        # self.upload_item(item)
+        self.upload_item(item)
         id = str(item.id)
         db.items.put(id, json.dumps(serialize(item)))
 
     def sync_items(self, lib):
         with PastanDB(self.s3, self.s3bucket) as db:
+            counter = 0
             for item in lib.items():
                 id = str(item.id)
                 raw_db_item = db.items.get(id)
@@ -42,10 +43,16 @@ class Pastan(BeetsPlugin):
                     # if already exists check modification time
                     if (db_item["mtime"] < item.mtime):
                         self.update_item(db, item)
+                        counter = counter + 1
                     # TODO: check if item is on S3
                 else:
                     self.update_item(db, item)
-                # db.save()
+                    counter = counter + 1
+
+                # Store the db every 20 uploaded files
+                if counter > 20:
+                    db.save()
+                    counter = 0
 
     def pastan(self, lib, opts, args):
         # Set up connection to S3 and retrieve/initalize DB
