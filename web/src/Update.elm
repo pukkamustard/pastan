@@ -20,10 +20,10 @@ update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     ReceivedItems maybeItems ->
-      ( { model | items = Maybe.withDefault model.items maybeItems }, Effects.none )
+      ( { model | items = List.sortWith Item.compareItem (Maybe.withDefault model.items maybeItems) }, Effects.none )
 
     ReceivedAlbums maybeAlbums ->
-      ( { model | albums = Maybe.withDefault model.albums maybeAlbums}, Effects.none )
+      ( { model | albums = Maybe.withDefault model.albums maybeAlbums }, Effects.none )
 
     AddToQueue item ->
       ( { model | queue = List.append model.queue [ item ] }, Effects.none )
