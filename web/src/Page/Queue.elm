@@ -9,6 +9,7 @@ import Color
 import String
 import Base64
 import Material.Icons.Image exposing (music_note)
+import Material.Icons.Av exposing (play_circle_filled)
 import Update exposing (Action(..))
 import Model exposing (Model)
 import Item exposing (Item)
@@ -39,9 +40,24 @@ topMenu address model =
     [ Attributes.class "row" ]
     [ Html.div
         [ Attributes.class "col-md-12" ]
-        [ Html.a [ Attributes.href (dataURI "application/vnd.apple.mpegurl" (m3u model.queue)) ] [ Html.text "M3U" ]
-        ]
+        [ downloadPlaylistButton model ]
     ]
+
+
+downloadPlaylistButton : Model -> Html
+downloadPlaylistButton model =
+  let
+    size =
+      64
+  in
+    Html.a
+      [ Attributes.href (dataURI "application/vnd.apple.mpegurl" (m3u model.queue)) ]
+      [ Svg.svg
+          [ Svg.Attributes.width (toString size)
+          , Svg.Attributes.height (toString size)
+          ]
+          [ play_circle_filled Color.grey size ]
+      ]
 
 
 item : Signal.Address Action -> Item -> Html

@@ -8,7 +8,7 @@ import Svg
 import Svg.Attributes
 import Color
 import Material.Icons.Image exposing (music_note)
-import Material.Icons.Content exposing (add)
+import Material.Icons.Av exposing (queue)
 import Update exposing (Action(..))
 import Model exposing (Model)
 import Item exposing (Item)
@@ -62,7 +62,7 @@ itemIcon address i =
           , Svg.Attributes.width (toString size)
           , Svg.Attributes.height (toString size)
           ]
-          [ add Color.grey size ]
+          [ queue Color.grey size ]
       ]
 
 
