@@ -4,15 +4,13 @@ from beets.ui import Subcommand
 import boto3
 from boto3.s3.transfer import S3Transfer
 import tempfile
+import shutil
 import plyvel
+import tarfile
 
 
 import json
 import mimetypes
-
-
-DB_OFFLINE = True
-OFFLINE_DB_PATH = '/tmp/pastan/'
 
 
 class Pastan(BeetsPlugin):
@@ -47,6 +45,7 @@ class Pastan(BeetsPlugin):
                     # TODO: check if item is on S3
                 else:
                     self.update_item(db, item)
+                # db.save()
 
     def pastan(self, lib, opts, args):
         # Set up connection to S3 and retrieve/initalize DB
@@ -84,25 +83,52 @@ class PastanDB:
         self.s3bucket = s3bucket
 
     def __enter__(self):
-        self._db, self.items = self._open()
+        self._path = tempfile.mkdtemp()
+        print "db: path is ", self._path
+        self._open()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._db.close()
         if self._db.closed:
-            print "pastanDB closed."
+            print "db: uploading"
+            try:
+                self._upload()
+                shutil.rmtree(self._path)
+                print "db: uploaded and cleaned up"
+            except:
+                print "db: failed to upload or clean up"
         else:
-            print "failed to close pastanDB."
+            print "db: failed to close"
+
+    def save(self):
+        self._db.close()
+        try:
+            self._upload()
+            print "db: uploaded"
+        except:
+            print "db: failed to save"
+        self._open()
 
     def _open(self):
-        if DB_OFFLINE:
-            db = plyvel.DB(OFFLINE_DB_PATH, create_if_missing=True)
-            items = db.prefixed_db(b'!items!')
-            return db, items
-        else:
-            self._path = tempfile.mkdtemp()
+        try:
+            self._download()
+            print "db: ready"
+        except:
+            print "db: download failed, creating new"
 
-    def saveDB(self):
-        with open(self.db_path, 'w') as outfile:
-            json.dump(self.db, outfile)
-        self.s3.upload_file(self.db_path, self.s3bucket, 'db.json')
+        self._db = plyvel.DB(self._path + "/db", create_if_missing=True)
+        self.items = self._db.prefixed_db(b'!items!')
+
+    def _download(self):
+        tar_path = self._path + "/db.tar"
+        self.s3.download_file(
+            self.s3bucket, 'db.tar', tar_path)
+        with tarfile.open(tar_path, "r") as tar:
+            tar.extractall(self._path)
+
+    def _upload(self):
+        tar_path = self._path + "/db.tar"
+        with tarfile.open(tar_path, "w") as tar:
+            tar.add(self._path + "/db/", arcname="db")
+        self.s3.upload_file(tar_path, self.s3bucket, 'db.tar')
