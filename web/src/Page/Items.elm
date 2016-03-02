@@ -30,7 +30,12 @@ search : Signal.Address Action -> Model -> Html
 search address model =
   Html.div
     [ Attributes.class "search-container" ]
-    [  Html.input [ Attributes.id "search" ] []
+    [ Html.input
+        [ Attributes.id "search"
+        , Attributes.placeholder "Search"
+        , Events.on "input" Events.targetValue (\query -> Signal.message address (QueryItems query))
+        ]
+        []
     ]
 
 
@@ -38,7 +43,7 @@ itemRow : Signal.Address Action -> Item -> Html
 itemRow address item =
   Html.tr
     []
-    [ Html.td [] [ Html.text item.title ]
+    [ Html.td [ addToQueue address item ] [ Html.text item.title ]
     , Html.td [] [ Html.text item.artist ]
     , Html.td [] [ Html.text item.album ]
     , Html.td [] [ Html.a [ Attributes.href (Item.fileUrl item), Attributes.target "_blank" ] [ Html.text "..." ] ]

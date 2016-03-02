@@ -6,7 +6,6 @@ import StartApp exposing (start)
 import Task
 import Update exposing (update, Action)
 import View exposing (view)
-import Pastan
 import Model exposing (Model)
 import Page exposing (Page(..))
 
@@ -28,7 +27,7 @@ init =
     , queue = []
     , currentPage = PageItems
     }
-  , Effects.batch [ Pastan.getItems, Pastan.getAlbums ]
+  , Effects.batch [ Update.queryItems "", Update.queryAlbums "" ]
   )
 
 
