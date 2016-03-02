@@ -7,16 +7,22 @@ type alias Item =
   { id : Int
   , artist : String
   , title : String
+  , length : Float
+  , album : String
+  , album_id : Int
   }
 
 
 decode : Json.Decoder Item
 decode =
-  Json.object3
-    (\id artist title -> { id = id, artist = artist, title = title })
+  Json.object6
+    (\id artist title length album album_id -> { id = id, artist = artist, title = title, length = length, album = album, album_id = album_id })
     ("id" := Json.int)
     ("artist" := Json.string)
     ("title" := Json.string)
+    ("length" := Json.float)
+    ("album" := Json.string)
+    ("album_id" := Json.int)
 
 
 decodeList : Json.Decoder (List Item)

@@ -51,7 +51,7 @@ downloadPlaylistButton model =
       64
   in
     Html.a
-      [ Attributes.href (dataURI "application/vnd.apple.mpegurl" (m3u model.queue)) ]
+      [ Attributes.href (dataURI "application/vnd.apple.mpegurl" (m3u model.queue))]
       [ Svg.svg
           [ Svg.Attributes.width (toString size)
           , Svg.Attributes.height (toString size)
@@ -99,7 +99,13 @@ items address list =
 
 m3u : List Item -> String
 m3u items =
-  String.join "\n" <| List.map Item.fileUrl items
+  "#EXTM3U\n\n"
+    ++ (String.join "\n" <| List.map m3uEntry items)
+
+
+m3uEntry : Item -> String
+m3uEntry item =
+  "#EXTINF:" ++ (toString item.length) ++ "," ++ item.artist ++ " - " ++ item.title ++ "\n" ++ (Item.fileUrl item)
 
 
 dataURI : String -> String -> String
