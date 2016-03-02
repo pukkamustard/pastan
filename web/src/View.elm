@@ -42,7 +42,7 @@ page address model =
   pageWrapper
     <| case model.currentPage of
         PageItems ->
-          [ Page.Items.view address model ]
+          Page.Items.view address model
 
         PageAlbums ->
           [ Page.Albums.view address model ]

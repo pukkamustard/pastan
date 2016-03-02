@@ -9,13 +9,28 @@ import Model exposing (Model)
 import Item exposing (Item)
 
 
-view : Signal.Address Action -> Model -> Html
+view : Signal.Address Action -> Model -> List Html
 view address model =
+  [ Html.div
+      [ Attributes.class "row" ]
+      [ Html.div
+          [ Attributes.class "col-md-12" ]
+          [ search address model ]
+      ]
+  , Html.div
+      [ Attributes.class "row" ]
+      [ Html.div
+          [ Attributes.class "col-md-12" ]
+          [ (itemsTable address model.items) ]
+      ]
+  ]
+
+
+search : Signal.Address Action -> Model -> Html
+search address model =
   Html.div
-    [ Attributes.class "row" ]
-    [ Html.div
-        [ Attributes.class "col-md-12" ]
-        [ (itemsTable address model.items) ]
+    [ Attributes.class "search-container" ]
+    [  Html.input [ Attributes.id "search" ] []
     ]
 
 

@@ -23,7 +23,13 @@ app =
 
 init : ( Model, Effects Action )
 init =
-  ( { items = [], albums = [], queue = [], currentPage = PageItems }, Effects.batch [ Pastan.getItems, Pastan.getAlbums ] )
+  ( { items = []
+    , albums = []
+    , queue = []
+    , currentPage = PageItems
+    }
+  , Effects.batch [ Pastan.getItems, Pastan.getAlbums ]
+  )
 
 
 main : Signal Html

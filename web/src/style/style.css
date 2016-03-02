@@ -1,17 +1,13 @@
- .item-add .icon-add {
-     display: none;
- }
- .item-add:hover .icon-note, .item-add:active .icon-note {
-     display: none;
- }
- .item-add:hover .icon-add, .item-add:active .icon-add {
-     display: block;
- }
- .item-add {
-     background-color: inherit;
-     transition: background-color 0.5s;
- }
- .item-add:active {
-     background-color: black;
-     transition: background-color 0s;
- }
+.search-container {
+    position: relative;
+}
+.search-container #search {
+    border: none;
+    padding-left: 20px;
+    background: #F8F8F8 ;
+    border-radius: 5px;
+    font-size: 20px;
+    float: left;
+    width: 100%;
+    height: 50px;
+}
