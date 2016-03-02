@@ -1,32 +1,36 @@
 var express = require('express');
 var router = express.Router();
+var JSONStream = require('JSONStream');
 
-var s3 = require('../s3');
+var pastan = require('../pastan');
+var queryparser = require('../queryparser');
 
 router.route('/')
-    .get(function(req, res, next) {
+    .get(queryparser, function(req, res, next) {
         var db = req.app.get('db');
 
-        var keys = Object.keys(db.items);
-        var items = [];
-        for (var i = 0; i < keys.length; i++) {
-            items.push(db.items[keys[i]]);
-        }
+        res.setHeader("content-type", "application/json");
+        pastan
+            .items(db, req.mongoq)
+            .pipe(JSONStream.stringify())
+            .pipe(res);
 
-        res.json(items);
     });
 
 router.param('id', function(req, res, next, id) {
-    var items = req.app.get('db').items;
+    var db = req.app.get('db');
 
-    if (id in items) {
-        req.item = items[id];
+    pastan.item(db, id, function(err, item) {
+        if (err) {
+            if (err.notFound) {
+                err.status = 404;
+                return next(err);
+            }
+            return next(err);
+        }
+        req.item = item;
         return next();
-    } else {
-        var err = new Error('Item not found.');
-        err.status = 404;
-        return next(err);
-    }
+    });
 });
 
 
@@ -37,10 +41,11 @@ router.route('/:id')
 
 router.route('/:id/file')
     .get(function(req, res, next) {
-        return s3.getUrl(req.item)
-            .then(function(url) {
-                return res.redirect(url);
-            });
+        pastan.url(req.item, function(err, url) {
+            if (err)
+                next(err);
+            return res.redirect(url);
+        });
     });
 
 module.exports = router;

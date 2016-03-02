@@ -2,13 +2,14 @@ var express = require('express');
 var cors = require('cors');
 var app = express();
 
-var s3 = require('./s3');
+var pastan = require('./pastan');
 
-s3.getDb().then(function(db) {
+// Initialize db
+pastan.open(function(err, db) {
+    if (err)
+        console.log("Error while opening db.");
+    console.log("db ready.");
     app.set('db', db);
-    console.log("DB received.");
-}).catch(function(error) {
-    console.error(error);
 });
 
 // enable cors
@@ -16,22 +17,15 @@ app.use(cors());
 
 app.get('/', function(req, res) {
     res.json({
-        msg: 'Hello my name is Pastan!'
+        msg: 'Hello, my name is Pastan!'
     });
 });
 
 var items = require('./routes/items');
 app.use('/items', items);
 
-var albums = require('./routes/albums');
-app.use('/albums', albums);
-
-// Beets Web plugin compatibility
-// app.use('/item', items);
-// app.use('/album', albums);
-
-var stats = require('./routes/stats');
-app.use('/stats', stats);
+// var albums = require('./routes/albums');
+// app.use('/albums', albums);
 
 // development error handler
 // will print stacktrace
