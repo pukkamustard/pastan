@@ -32,7 +32,7 @@ search address model =
     [ Attributes.class "search-container" ]
     [ Html.input
         [ Attributes.id "search"
-        , Attributes.placeholder "Search"
+        , Attributes.placeholder "Query"
         , Events.on "input" Events.targetValue (\query -> Signal.message address (QueryItems query))
         ]
         []
