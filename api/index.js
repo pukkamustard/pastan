@@ -4,6 +4,23 @@ var app = express();
 
 var pastan = require('./pastan');
 
+
+
+// enable cors
+app.use(cors());
+
+
+// Morgan logger
+var logger = require('morgan');
+app.use(logger(':date[iso] :url :status :res[content-length] :response-time'));
+
+
+app.get('/', function(req, res) {
+    res.json({
+        msg: 'Hello, my name is Pastan.'
+    });
+});
+
 // Initialize db
 pastan.open(function(err, db) {
     if (err)
@@ -12,27 +29,30 @@ pastan.open(function(err, db) {
     app.set('db', db);
 });
 
-// enable cors
-app.use(cors());
-
-app.get('/', function(req, res) {
-    res.json({
-        msg: 'Hello, my name is Pastan.'
-    });
+app.use(function(req, res, next) {
+    if (!app.get('db')) {
+        res.status = 503;
+        res.json({
+            message: "Database not ready."
+        });
+    } else {
+        return next();
+    }
 });
 
 var items = require('./routes/items');
 app.use('/items', items);
 
-var albums = require('./routes/albums');
-app.use('/albums', albums);
+// var albums = require('./routes/albums');
+// app.use('/albums', albums);
 
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        console.log(err.stack);
+        if (!err.status)
+            console.log(err.stack);
         res.json({
             message: err.message,
             error: err

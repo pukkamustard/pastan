@@ -9,9 +9,6 @@ gulp.task('nodemon', function() {
         script: 'api/index.js',
         ext: 'js',
         ignore: 'client/**/*.*',
-        env: {
-            'NODE_ENV': 'development'
-        }
     });
 });
 

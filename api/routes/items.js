@@ -10,6 +10,7 @@ router.route('/')
         var db = req.app.get('db');
 
         res.setHeader("content-type", "application/json");
+        
         pastan
             .items(db, req.mongoq)
             .pipe(JSONStream.stringify())

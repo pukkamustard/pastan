@@ -6,7 +6,7 @@ module.exports = function(req, res, next) {
             req.mongoq = hrq2mongoq.parse(req.query.q);
             next();
         } catch(err) {
-            var parseError = new Error("The given query was invalid.");
+            var parseError = new Error("Invalid query.");
             parseError.parsingDetails = err;
             parseError.status = 400;
             return next(parseError);
