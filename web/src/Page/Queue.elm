@@ -41,27 +41,33 @@ topMenu : Signal.Address Action -> Model -> Html
 topMenu address model =
   Html.div
     [ Attributes.class "row" ]
-    [ Html.div
-        [ Attributes.class "col-md-12" ]
-        [ downloadPlaylistButton model ]
+    [ buttons address model
     ]
 
 
-downloadPlaylistButton : Model -> Html
-downloadPlaylistButton model =
+buttons : Signal.Address Action -> Model -> Html
+buttons address model =
+  Html.div
+    [ Attributes.class "col-md-1 col-md-offset-11 buttons" ]
+    [ downloadPlaylistButton model.queue ]
+
+
+downloadPlaylistButton : List Item -> Html
+downloadPlaylistButton items =
   let
     size =
-      64
+      48
   in
     Html.a
-      [ Attributes.href (dataURI "application/vnd.apple.mpegurl" (m3u model.queue)) ]
+      [ Attributes.class "icon-button"
+      , Attributes.href (dataURI "application/vnd.apple.mpegurl" (m3u items))
+      ]
       [ Svg.svg
           [ Svg.Attributes.width (toString size)
           , Svg.Attributes.height (toString size)
           ]
           [ play_circle_filled Color.grey size ]
       ]
-
 
 
 -- item : Signal.Address Action -> Item -> Html

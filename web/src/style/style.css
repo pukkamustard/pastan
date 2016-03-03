@@ -16,9 +16,6 @@
     opacity: 0.5;
     transition: opacity .25s;
 }
-.icon-button:active svg{
-    background-color: red;
-}
 .album-row {
     margin-top: 20px;
     margin-bottom: 20px;
