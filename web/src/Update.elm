@@ -15,7 +15,7 @@ type Action
   | ReceivedItems String (Maybe (List Item))
   | QueryItems String
   | ReceivedAlbums (Maybe (List Album))
-  | AddToQueue Item
+  | AddToQueue (List Item)
   | ChangePage Page
 
 
@@ -63,8 +63,8 @@ update action model =
     ReceivedAlbums maybeAlbums ->
       ( { model | albums = Maybe.withDefault model.albums maybeAlbums }, Effects.none )
 
-    AddToQueue item ->
-      ( { model | queue = List.append model.queue [ item ] }, Effects.none )
+    AddToQueue items ->
+      ( { model | queue = List.append model.queue items  }, Effects.none )
 
     ChangePage page ->
       ( { model | currentPage = page }, Effects.none )

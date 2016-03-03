@@ -38,7 +38,7 @@ albumTile address album =
     , onClick address album
     ]
     [ Html.div
-        [ Attributes.class "square" ]
+        [ Attributes.class "album-square" ]
         []
     , Html.h4 [] [ Html.text album.album ]
     , Html.text album.albumartist

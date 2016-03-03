@@ -4,6 +4,15 @@ import Signal
 import Html exposing (Html, Attribute)
 import Html.Attributes as Attributes
 import Html.Events as Events
+import Svg exposing (Svg)
+import Svg.Attributes
+import Material.Icons.Av exposing (queue)
+import Material.Icons.Content exposing (add)
+import Color
+
+
+-- Pastan related imports
+
 import Update exposing (Action(..))
 import Model exposing (Model)
 import Item exposing (Item)
@@ -16,8 +25,8 @@ view address model =
     [ Html.div
         [ Attributes.class "row" ]
         [ Html.div
-            [ Attributes.class "col-md-12" ]
-            [ queryField address model ]
+            []
+            [ topMenu address model ]
         ]
     , Html.div
         [ Attributes.class "row" ]
@@ -28,18 +37,45 @@ view address model =
     ]
 
 
-queryField : Signal.Address Action -> Model -> Html
-queryField address model =
+topMenu : Signal.Address Action -> Model -> Html
+topMenu address model =
   Html.div
-    [ Attributes.class "query-container"
+    [ Attributes.class "top-menu" ]
+    [ queryInput address model.itemsQuery
+    , buttons address model
     ]
+
+
+queryInput : Signal.Address Action -> String -> Html
+queryInput address itemsQuery =
+  Html.div
+    [ Attributes.class "col-md-11" ]
     [ Html.input
         [ Attributes.id "query-field"
-        , Attributes.placeholder model.itemsQuery
-        -- , Attributes.value model.itemsQuery
+        , Attributes.placeholder itemsQuery
+          -- , Attributes.value model.itemsQuery
         , Events.on "input" Events.targetValue (\query -> Signal.message address (QueryItems query))
         ]
         []
+    ]
+
+
+buttons : Signal.Address Action -> Model -> Html
+buttons address model =
+  Html.div
+    [ Attributes.class "col-md-1 buttons" ]
+    [ queueButton (queue Color.lightCharcoal) 48 address model.items ]
+
+
+queueButton : (Int -> Svg) -> Int -> Signal.Address Action -> List Item -> Html
+queueButton icon size address items =
+  Html.a
+    [ Attributes.class "icon-button"
+    , addToQueue address items
+    ]
+    [ Svg.svg
+        [ Svg.Attributes.width (toString size), Svg.Attributes.height (toString size) ]
+        [ icon size]
     ]
 
 
@@ -47,26 +83,17 @@ itemRow : Signal.Address Action -> Item -> Html
 itemRow address item =
   Html.tr
     []
-    [ Html.td [ addToQueue address item ] [ Html.text item.title ]
+    [ Html.td [] [ Html.text item.title ]
     , Html.td [] [ Html.text item.artist ]
     , Html.td [] [ Html.text item.album ]
     , Html.td [] [ Html.a [ Attributes.href (Item.fileUrl item), Attributes.target "_blank" ] [ Html.text "..." ] ]
+    , Html.td [] [ queueButton (add Color.lightCharcoal) 32 address [ item ] ]
     ]
 
 
-
--- [ Html.div [ Attributes.class "media-left" ] [ itemIcon address i ]
--- , Html.div
---     [ Attributes.class "media-body" ]
---     [ Html.h4 [ Attributes.class "media-heading" ] [ Html.text (i.artist ++ " - " ++ i.title) ]
---     , Html.a [ Attributes.href (Item.fileUrl i), Attributes.target "_blank" ] [ Html.text "file " ]
---     ]
--- ]
-
-
-addToQueue : Signal.Address Action -> Item -> Attribute
+addToQueue : Signal.Address Action -> List Item -> Attribute
 addToQueue address =
-  (\i -> Events.onClick address (AddToQueue i))
+  (\items -> Events.onClick address (AddToQueue items))
 
 
 itemsTable : Signal.Address Action -> List Item -> Html
@@ -81,6 +108,7 @@ itemsTable address list =
             , Html.th [] [ Html.text "Artist" ]
             , Html.th [] [ Html.text "Album" ]
             , Html.th [] [ Html.text "Link" ]
+            , Html.th [] [ Html.text "Queue" ]
             ]
         ]
     , Html.tbody [] (List.map (itemRow address) list)

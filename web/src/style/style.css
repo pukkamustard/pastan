@@ -1,7 +1,7 @@
-.query-container {
+.top-menu {
     position: relative;
 }
-.query-container #query-field {
+.top-menu #query-field {
     border: none;
     padding-left: 20px;
     background: #F8F8F8;
@@ -11,22 +11,24 @@
     width: 100%;
     height: 50px;
 }
-
-/*.album-tile {
+.top-menu #buttons {}
+.icon-button:hover {
+    opacity: 0.5;
+    transition: opacity .25s;
+}
+.icon-button:active svg{
     background-color: red;
-    background-image: url(http://ia801004.us.archive.org/22/items/mbid-bad4c9ec-4bcb-42a2-bdbf-b47888550ecb/mbid-bad4c9ec-4bcb-42a2-bdbf-b47888550ecb-5310603722_thumb500.jpg);
-    border-radius: 5px;
-    height: 400px;
-}*/
-
+}
 .album-row {
     margin-top: 20px;
     margin-bottom: 20px;
 }
-
-.square {
+.album-square {
     width: 100%;
     padding-bottom: 100%;
     background-image: url(http://ia801004.us.archive.org/22/items/mbid-bad4c9ec-4bcb-42a2-bdbf-b47888550ecb/mbid-bad4c9ec-4bcb-42a2-bdbf-b47888550ecb-5310603722_thumb500.jpg);
     background-size: cover;
+}
+.album-square:hover {
+    opacity: 0.8;
 }
