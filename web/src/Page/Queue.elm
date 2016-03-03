@@ -8,11 +8,11 @@ import Svg.Attributes
 import Color
 import String
 import Base64
-
-
--- import Material.Icons.Image exposing (music_note)
-
 import Material.Icons.Av exposing (play_circle_filled)
+
+
+-- Application related
+
 import Update exposing (Action(..))
 import Model exposing (Model)
 import Item exposing (Item)
@@ -27,14 +27,8 @@ view address model =
     ]
 
 
-queue : Signal.Address Action -> Model -> Html
-queue address model =
-  Html.div
-    [ Attributes.class "row" ]
-    [ Html.div
-        [ Attributes.class "col-md-12" ]
-        [ (itemsTable address model.queue) ]
-    ]
+
+-- top menu
 
 
 topMenu : Signal.Address Action -> Model -> Html
@@ -70,23 +64,18 @@ downloadPlaylistButton items =
       ]
 
 
--- item : Signal.Address Action -> Item -> Html
--- item address i =
---   Html.li
---     [ Attributes.class "media item" ]
---     [ Html.div [ Attributes.class "media-left" ] [ itemIcon address i ]
---     , Html.div
---         [ Attributes.class "media-body" ]
---         [ Html.h4 [ Attributes.class "media-heading" ] [ Html.text (i.artist ++ " - " ++ i.title) ]
---         , Html.a [ Attributes.href (Item.fileUrl i), Attributes.target "_blank" ] [ Html.text "file " ]
---         ]
---     ]
--- items : Signal.Address Action -> List Item -> Html
--- items address list =
---   Html.ul
---     [ Attributes.class "media-list items col-md-6" ]
---     (List.map (item address) list)
---
+
+-- Queue
+
+
+queue : Signal.Address Action -> Model -> Html
+queue address model =
+  Html.div
+    [ Attributes.class "row" ]
+    [ Html.div
+        [ Attributes.class "col-md-12" ]
+        [ (itemsTable address model.queue) ]
+    ]
 
 
 itemRow : Signal.Address Action -> Item -> Html
@@ -116,6 +105,10 @@ itemsTable address list =
         ]
     , Html.tbody [] (List.map (itemRow address) list)
     ]
+
+
+
+-- M3U
 
 
 m3u : List Item -> String
