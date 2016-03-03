@@ -6,7 +6,7 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Svg exposing (Svg)
 import Svg.Attributes
-import Material.Icons.Av exposing (queue)
+import Material.Icons.Av exposing (queue, play_arrow)
 import Material.Icons.Content exposing (add)
 import Color
 
@@ -75,7 +75,7 @@ queueButton icon size address items =
     ]
     [ Svg.svg
         [ Svg.Attributes.width (toString size), Svg.Attributes.height (toString size) ]
-        [ icon size]
+        [ icon size ]
     ]
 
 
@@ -86,8 +86,21 @@ itemRow address item =
     [ Html.td [] [ Html.text item.title ]
     , Html.td [] [ Html.text item.artist ]
     , Html.td [] [ Html.text item.album ]
-    , Html.td [] [ Html.a [ Attributes.href (Item.fileUrl item), Attributes.target "_blank" ] [ Html.text "..." ] ]
+    , Html.td [] [ playButton address item ]
     , Html.td [] [ queueButton (add Color.lightCharcoal) 32 address [ item ] ]
+    ]
+
+
+playButton : Signal.Address Action -> Item -> Html
+playButton address item =
+  Html.a
+    [ Attributes.class "icon-button"
+    , Attributes.href (Item.fileUrl item)
+    , Attributes.target "_blank"
+    ]
+    [ Svg.svg
+        [ Svg.Attributes.width (toString 32), Svg.Attributes.height (toString 32) ]
+        [ play_arrow Color.lightCharcoal 32 ]
     ]
 
 
@@ -107,8 +120,6 @@ itemsTable address list =
             [ Html.th [] [ Html.text "Title" ]
             , Html.th [] [ Html.text "Artist" ]
             , Html.th [] [ Html.text "Album" ]
-            , Html.th [] [ Html.text "Link" ]
-            , Html.th [] [ Html.text "Queue" ]
             ]
         ]
     , Html.tbody [] (List.map (itemRow address) list)
