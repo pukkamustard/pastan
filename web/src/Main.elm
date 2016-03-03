@@ -23,9 +23,10 @@ app =
 init : ( Model, Effects Action )
 init =
   ( { items = []
+    , itemsQuery = ""
     , albums = []
     , queue = []
-    , currentPage = PageAlbums
+    , currentPage = PageItems
     }
   , Effects.batch [ Update.queryItems "", Update.queryAlbums "" ]
   )

@@ -1,7 +1,7 @@
-.search-container {
+.query-container {
     position: relative;
 }
-.search-container #search {
+.query-container #query-field {
     border: none;
     padding-left: 20px;
     background: #F8F8F8;

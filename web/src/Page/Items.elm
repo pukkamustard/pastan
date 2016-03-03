@@ -17,7 +17,7 @@ view address model =
         [ Attributes.class "row" ]
         [ Html.div
             [ Attributes.class "col-md-12" ]
-            [ search address model ]
+            [ queryField address model ]
         ]
     , Html.div
         [ Attributes.class "row" ]
@@ -28,13 +28,15 @@ view address model =
     ]
 
 
-search : Signal.Address Action -> Model -> Html
-search address model =
+queryField : Signal.Address Action -> Model -> Html
+queryField address model =
   Html.div
-    [ Attributes.class "search-container" ]
+    [ Attributes.class "query-container"
+    ]
     [ Html.input
-        [ Attributes.id "search"
-        , Attributes.placeholder "Query"
+        [ Attributes.id "query-field"
+        , Attributes.placeholder model.itemsQuery
+        -- , Attributes.value model.itemsQuery
         , Events.on "input" Events.targetValue (\query -> Signal.message address (QueryItems query))
         ]
         []
