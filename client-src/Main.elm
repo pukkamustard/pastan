@@ -28,7 +28,7 @@ init =
     , queue = []
     , currentPage = PageItems
     }
-  , Effects.batch [ Update.queryItems "", Update.queryAlbums "" ]
+  , Effects.batch [ Update.queryItems ""]
   )
 
 

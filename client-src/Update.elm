@@ -48,8 +48,10 @@ update action model =
         Just items ->
           ( { model
               | currentPage = PageItems
-              , itemsQuery = query
-              , items = List.sortWith Item.compareItem (Maybe.withDefault model.items maybeItems)
+              , itemsQuery =
+                  query
+                  --   , items = List.sortWith Item.compareItem (Maybe.withDefault model.items maybeItems)
+              , items = Maybe.withDefault model.items maybeItems
             }
           , Effects.none
           )
@@ -64,7 +66,7 @@ update action model =
       ( { model | albums = Maybe.withDefault model.albums maybeAlbums }, Effects.none )
 
     AddToQueue items ->
-      ( { model | queue = List.append model.queue items  }, Effects.none )
+      ( { model | queue = List.append model.queue items }, Effects.none )
 
     ChangePage page ->
       ( { model | currentPage = page }, Effects.none )

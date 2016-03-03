@@ -1,11 +1,13 @@
 var levelup = require('levelup');
 var sublevel = require('sublevelup');
 
+var _ = require('lodash');
+var levelQuery = require('level-queryengine');
+var pastanEngine = require('./pastan-engine');
+
+
 var tar = require('tar-fs');
 var temp = require('temp').track();
-
-var jsonquery = require('jsonquery');
-var hrq2mongoq = require('hrq2mongoq');
 
 var AWS = require('aws-sdk');
 var s3 = new AWS.S3({
@@ -23,16 +25,33 @@ function open(cb) {
             .createReadStream()
             .pipe(tar.extract(path))
             .on('finish', function() {
-                cb(null, sublevel(levelup(path + '/db')));
+                cb(null, preparedb(path));
             });
     });
 }
 
+function preparedb(path) {
+    var db = sublevel(levelup(path + '/db', {
+        valueEncoding: 'json'
+    }));
+
+    db.items = levelQuery(db.sublevel('items'));
+
+    // custom query engine
+    db.items.query.use(pastanEngine());
+    db.items.ensureIndex('sorted', function(key, value, emit) {
+        fields = ['albumartist', 'original_year', 'album_id', 'track'];
+        emit(_.map(fields, function(field) {
+            return value[field];
+        }));
+    });
+
+    return db;
+}
+
 
 function item(db, id, cb) {
-    return db.sublevel('items').get(id, {
-        valueEncoding: 'json'
-    }, cb);
+    return db.items.get(id, cb);
 }
 
 function url(item, cb) {
@@ -44,34 +63,34 @@ function url(item, cb) {
 
 function items(db, query) {
     query = query || {};
-    return db.sublevel('items')
-        .createValueStream({
-            valueEncoding: 'json',
-        })
-        .pipe(jsonquery(query));
+    // console.log(query);
+    return db.items.query(query)
+        .on('stats', function(stats) {
+            console.log(stats);
+        });
 }
 
-function album(db, id, cb) {
-    return db.sublevel('albums').get(id, {
-        valueEncoding: 'json'
-    }, cb);
-}
-
-function albums(db, query) {
-    query = query || {};
-    return db.sublevel('albums')
-        .createValueStream({
-            valueEncoding: 'json',
-        })
-        .pipe(jsonquery(query));
-}
+// function album(db, id, cb) {
+//     return db.sublevel('albums').get(id, {
+//         valueEncoding: 'json'
+//     }, cb);
+// }
+//
+// function albums(db, query) {
+//     query = query || {};
+//     return db.sublevel('albums')
+//         .createValueStream({
+//             valueEncoding: 'json',
+//         })
+//         .pipe(jsonquery(query));
+// }
 
 
 module.exports = {
     items: items,
     item: item,
     url: url,
-    albums: albums,
-    album: album,
+    // albums: albums,
+    // album: album,
     open: open
 };
