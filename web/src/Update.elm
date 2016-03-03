@@ -7,7 +7,7 @@ import Http
 import Model exposing (Model)
 import Item exposing (Item)
 import Album exposing (Album)
-import Page exposing (Page)
+import Page exposing (Page(..))
 
 
 type Action
@@ -44,7 +44,7 @@ update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     ReceivedItems maybeItems ->
-      ( { model | items = List.sortWith Item.compareItem (Maybe.withDefault model.items maybeItems) }, Effects.none )
+      ( { model | currentPage = PageItems, items = List.sortWith Item.compareItem (Maybe.withDefault model.items maybeItems) }, Effects.none )
 
     QueryItems query ->
       ( model, queryItems query )

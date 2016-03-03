@@ -25,7 +25,7 @@ init =
   ( { items = []
     , albums = []
     , queue = []
-    , currentPage = PageItems
+    , currentPage = PageAlbums
     }
   , Effects.batch [ Update.queryItems "", Update.queryAlbums "" ]
   )
