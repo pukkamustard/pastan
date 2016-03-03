@@ -27,7 +27,9 @@ class Pastan(BeetsPlugin):
                             extra_args={'ContentType': ctype})
 
     def update_item(self, db, item):
-        print item.artist, " - ", item.title, " (", item.id, ")"
+        # TODO: unicode...
+        # print item.artist, " - ", item.title, " (", item.id, ")"
+        print "Uploading item #" + item.id
         self.upload_item(item)
         id = str(item.id)
         db.items.put(id, json.dumps(serialize(item)))
