@@ -113,13 +113,14 @@ itemsTable address list =
 
 m3u : List Item -> String
 m3u items =
-  "#EXTM3U\n\n"
-    ++ (String.join "\n" <| List.map m3uEntry items)
+  -- "#EXTM3U\n\n"
+  (String.join "\n" <| List.map m3uEntry items)
 
 
 m3uEntry : Item -> String
 m3uEntry item =
-  "#EXTINF:" ++ (toString item.length) ++ "," ++ item.artist ++ " - " ++ item.title ++ "\n" ++ (Item.fileUrl item)
+  -- "#EXTINF:" ++ (toString item.length) ++ "," ++ item.artist ++ " - " ++ item.title ++ "\n" ++ (Item.fileUrl item)
+  Item.fileUrl item
 
 
 dataURI : String -> String -> String
