@@ -1,19 +1,13 @@
 var express = require('express');
-var cors = require('cors');
 var app = express();
 
-var pastan = require('./pastan');
-
-
-
 // enable cors
+var cors = require('cors');
 app.use(cors());
-
 
 // Morgan logger
 var logger = require('morgan');
 app.use(logger(':date[iso] :url :status :res[content-length] :response-time'));
-
 
 app.get('/', function(req, res) {
     res.json({
@@ -22,6 +16,7 @@ app.get('/', function(req, res) {
 });
 
 // Initialize db
+var pastan = require('./pastan');
 pastan.open(function(err, db) {
     if (err)
         console.log("Error while opening db.");
