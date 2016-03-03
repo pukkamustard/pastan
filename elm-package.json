@@ -4,7 +4,7 @@
     "repository": "https://github.com/pukkamustard/pastan.git",
     "license": "MIT",
     "source-directories": [
-        "src"
+        "client-src"
     ],
     "exposed-modules": [],
     "dependencies": {

@@ -1,10 +1,10 @@
 {
-  "name": "pastan-service",
-  "version": "0.0.1",
+  "name": "pastan",
+  "version": "1.0.0",
   "description": "Your music library in the cloud.",
-  "main": "app/app.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node app/app.js",
+    "start": "gulp serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,7 +21,12 @@
     "JSONStream": "^1.1.1",
     "aws-sdk": "^2.2.28",
     "cors": "^2.7.1",
+    "elm": "^0.16.0",
     "express": "^4.13.3",
+    "gulp-connect": "^3.1.0",
+    "gulp-elm": "^0.2.0",
+    "gulp-nodemon": "^2.0.6",
+    "gulp-shell": "^0.5.2",
     "hrq2mongoq": "^0.1.2",
     "jsonquery": "^0.1.7",
     "leveldown": "^1.4.4",

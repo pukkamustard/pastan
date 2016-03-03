@@ -8,8 +8,8 @@ This is the idea:
 
 This is done with following components:
 - Beets plugin: The plugin syncs your local library and a copy of the database to an Amazon S3 bucket. See `beets/` folder.
-- Web service: A node.js application hosts a REST API allowing access your library from S3. This is you would run somewhere in the cloud. See `service/` folder.
-- An [elm](http://elm-lang.org/) web client that allows pretty access to your library in the cloud. See `web/` folder.
+- Web service: A node.js application hosts a REST API allowing access your library from S3. This is you would run somewhere in the cloud. See `api/` folder.
+- An [elm](http://elm-lang.org/) web client that allows pretty access to your library in the cloud. See `client-src/` folder.
 
 Current limitations are:
 - No audio playback trough web client. You can create a playlist and download it as an m3u for playback.
@@ -39,8 +39,8 @@ pastan:
 
 To sync run the command `beet pastan`.
 
-### Web service
-In the folder `service/` run the command `npm install` to install dependencies.
+### Pastan service and client
+Run the command `npm install` to install dependencies.
 
 Set environment variables:
 
@@ -51,18 +51,13 @@ export AWS_REGION='eu-central-1'
 export PASTAN_S3_BUCKET='name-of-bucket'
 ```
 
-Start the service with: `npm start`.
+Start the monster with: `npm start`. This will compile the elm sources to the `client` folder and watch for changes with elm-live as well as start the node.js service with nodemon.
 
-### Web client
-I am using [elm-live](https://github.com/tomekwi/elm-live).
+Point your browser to [http://192.168.99.1:8000/client](http://192.168.99.1:8000/client).
 
-In the folder `web/` run `elm-live src/Main.elm --output=src/elm.js` and browse to [http://192.168.99.1:8000/src](http://192.168.99.1:8000/src).
-
-How it looks: ![Screenshot](/screenshots/items.png?raw=true)
+How it looks: ![Screenshot](doc/screenshots/items.png?raw=true)
 
 ## Todo
-- A build system
-
 Service:
 - Full text search. Also check why [jsonquery](https://www.npmjs.com/package/jsonquery) does not seem able to do regular expressions.
 - Host web client as static content

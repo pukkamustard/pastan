@@ -17,7 +17,7 @@ app.use(cors());
 
 app.get('/', function(req, res) {
     res.json({
-        msg: 'Hello, my name is Pastan!'
+        msg: 'Hello, my name is Pastan.'
     });
 });
 
