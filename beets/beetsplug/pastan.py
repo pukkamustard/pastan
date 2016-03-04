@@ -29,10 +29,15 @@ class Pastan(BeetsPlugin):
     def update_item(self, db, item):
         # TODO: unicode...
         # print item.artist, " - ", item.title, " (", item.id, ")"
-        print "Uploading item #" + item.id
-        self.upload_item(item)
-        id = str(item.id)
-        db.items.put(id, json.dumps(serialize(item)))
+        try:
+            self.upload_item(item)
+            id = str(item.id)
+            db.items.put(id, json.dumps(serialize(item)))
+            print "Uploaded item #" + item.id
+        except EnvironmentError:
+            print "Can not read item #" + item.id
+        except:
+            print "Failed to Upload item #" + item.id
 
     def sync_items(self, lib):
         with PastanDB(self.s3, self.s3bucket) as db:
