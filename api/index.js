@@ -16,12 +16,13 @@ app.get('/', function(req, res) {
 });
 
 // Initialize db
+var s3 = require('./s3');
 var pastan = require('./pastan');
-pastan.open(function(err, db) {
+s3.getDB(function(err, db) {
     if (err)
         console.log("Error while opening db.");
-    console.log("db ready.");
-    app.set('db', db);
+    console.log("db downloaded.");
+    app.set('db', pastan(db));
 });
 
 app.use(function(req, res, next) {
