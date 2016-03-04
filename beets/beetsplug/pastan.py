@@ -36,6 +36,8 @@ class Pastan(BeetsPlugin):
             print "Uploaded item #" + id
         except EnvironmentError:
             print "Can not read item #" + id
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             print "Failed to Upload item #" + id
 
