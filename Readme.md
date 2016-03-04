@@ -1,5 +1,5 @@
 # pastan
-Your music library in the cloud.
+beets in the cloud.
 
 This is the idea:
 - Sync your local [beets](http://beets.io/) library to the cloud (Amazon S3).
@@ -8,7 +8,7 @@ This is the idea:
 
 This is done with following components:
 - Beets plugin: The plugin syncs your local library and a copy of the database to an Amazon S3 bucket. See `beets/` folder.
-- Web service: A node.js application hosts a REST API allowing access your library from S3. This is you would run somewhere in the cloud. See `api/` folder.
+- Web service: A node.js application hosts a REST API allowing access your library from S3. This runs somewhere in the cloud. See `server/` folder.
 - An [elm](http://elm-lang.org/) web client that allows pretty access to your library in the cloud. See `client-src/` folder.
 
 Current limitations are:
@@ -39,7 +39,7 @@ pastan:
 
 To sync run the command `beet pastan`.
 
-### Pastan service and client
+### Pastan server and client
 Run the command `npm install` to install dependencies.
 
 Set environment variables:
@@ -51,15 +51,15 @@ export AWS_REGION='eu-central-1'
 export PASTAN_S3_BUCKET='name-of-bucket'
 ```
 
-Start the monster with: `npm start`. This will compile the elm sources to the `client` folder and watch for changes with elm-live as well as start the node.js service with nodemon.
+Start the monster with: `npm run dev`. This will compile the elm sources to the `client` folder and watch for changes with elm-live as well as start the node.js service with nodemon.
 
 Point your browser to [http://192.168.99.1:8000/client](http://192.168.99.1:8000/client).
 
 How it looks: ![Screenshot](doc/screenshots/items.png?raw=true)
 
 ## Todo
-Service:
-- Full text search. Also check why [jsonquery](https://www.npmjs.com/package/jsonquery) does not seem able to do regular expressions.
+Server:
+- Full text search.
 - Host web client as static content
 
 Web frontend:

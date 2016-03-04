@@ -1,7 +1,7 @@
 {
   "name": "pastan",
   "version": "1.0.0",
-  "description": "Your music library in the cloud.",
+  "description": "beets in the cloud.",
   "main": "server/index.js",
   "scripts": {
     "start": "gulp build && node server/index.js",

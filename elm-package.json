@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "client for pastan music library service",
+    "summary": "pastan - beets in the cloud",
     "repository": "https://github.com/pukkamustard/pastan.git",
     "license": "MIT",
     "source-directories": [
