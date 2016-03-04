@@ -25,12 +25,15 @@ function open(cb) {
             .createReadStream()
             .pipe(tar.extract(path))
             .on('finish', function() {
-                cb(null, preparedb(path));
+                cb(null, prepare(path));
+            })
+            .on('error', function(error){
+                cb(error, null);
             });
     });
 }
 
-function preparedb(path) {
+function prepare(path) {
     var db = sublevel(levelup(path + '/db', {
         valueEncoding: 'json'
     }));
@@ -92,5 +95,6 @@ module.exports = {
     url: url,
     // albums: albums,
     // album: album,
+    prepare: prepare,
     open: open
 };
