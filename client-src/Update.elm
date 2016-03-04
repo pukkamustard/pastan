@@ -13,7 +13,7 @@ import Page exposing (Page(..))
 type Action
   = NoOp
   | ReceivedItems String (Maybe (List Item))
-  | QueryItems String
+  | GetItems String
   | ReceivedAlbums (Maybe (List Album))
   | AddToQueue (List Item)
   | ChangePage Page
@@ -24,16 +24,16 @@ apiUrl =
   "http://localhost:8338/"
 
 
-queryItems : String -> Effects Action
-queryItems query =
+getItems : String -> Effects Action
+getItems query =
   Http.get Item.decodeList (apiUrl ++ "items?q=" ++ query)
     |> Task.toMaybe
     |> Task.map (ReceivedItems query)
     |> Effects.task
 
 
-queryAlbums : String -> Effects Action
-queryAlbums query =
+getAlbums : String -> Effects Action
+getAlbums query =
   Http.get Album.decodeList (apiUrl ++ "albums")
     |> Task.toMaybe
     |> Task.map ReceivedAlbums
@@ -48,9 +48,8 @@ update action model =
         Just items ->
           ( { model
               | currentPage = PageItems
-              , itemsQuery =
+              , query =
                   query
-                  --   , items = List.sortWith Item.compareItem (Maybe.withDefault model.items maybeItems)
               , items = Maybe.withDefault model.items maybeItems
             }
           , Effects.none
@@ -59,8 +58,8 @@ update action model =
         Nothing ->
           ( model, Effects.none )
 
-    QueryItems query ->
-      ( model, queryItems query )
+    GetItems query ->
+      ( model, getItems query )
 
     ReceivedAlbums maybeAlbums ->
       ( { model | albums = Maybe.withDefault model.albums maybeAlbums }, Effects.none )

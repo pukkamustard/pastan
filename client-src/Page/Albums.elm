@@ -47,7 +47,7 @@ albumTile address album =
 
 onClick : Signal.Address Action -> Album -> Attribute
 onClick address album =
-  Events.onClick address (QueryItems ("album_id is " ++ toString album.id))
+  Events.onClick address (GetItems ("album_id is " ++ toString album.id))
 
 
 chunksOfLeft : Int -> List a -> List (List a)

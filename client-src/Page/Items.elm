@@ -4,6 +4,7 @@ import Signal
 import Html exposing (Html, Attribute)
 import Html.Attributes as Attributes
 import Html.Events as Events
+import Json.Decode as Json
 import Svg exposing (Svg)
 import Svg.Attributes
 import Material.Icons.Av exposing (queue, play_arrow)
@@ -41,7 +42,7 @@ topMenu : Signal.Address Action -> Model -> Html
 topMenu address model =
   Html.div
     [ Attributes.class "top-menu" ]
-    [ queryInput address model.itemsQuery
+    [ queryInput address model.query
     , buttons address model
     ]
 
@@ -52,12 +53,29 @@ queryInput address itemsQuery =
     [ Attributes.class "col-md-11" ]
     [ Html.input
         [ Attributes.id "query-field"
-        , Attributes.placeholder itemsQuery
-          -- , Attributes.value model.itemsQuery
-        , Events.on "input" Events.targetValue (\query -> Signal.message address (QueryItems query))
+        , Attributes.value itemsQuery
+        , onEnter Events.targetValue (\query -> Signal.message address (GetItems query))
         ]
         []
     ]
+
+
+
+-- Copied from Html.Shorthand.Event
+
+
+onEnter : Json.Decoder a -> (a -> Signal.Message) -> Attribute
+onEnter dec f =
+  Events.on
+    "keydown"
+    (Json.customDecoder (Json.object2 (,) Events.keyCode dec)
+      <| \( c, val ) ->
+          if c == 13 then
+            Ok val
+          else
+            Err "expected key code 13"
+    )
+    f
 
 
 buttons : Signal.Address Action -> Model -> Html
@@ -79,16 +97,53 @@ queueButton icon size address items =
     ]
 
 
+
+-- Items table
+
+
+itemsTable : Signal.Address Action -> List Item -> Html
+itemsTable address list =
+  Html.table
+    [ Attributes.class "table table-hover col-md-12" ]
+    [ Html.thead
+        []
+        [ Html.tr
+            []
+            [ Html.th [] [ Html.text "Title" ]
+            , Html.th [] [ Html.text "Artist" ]
+            , Html.th [] [ Html.text "Album" ]
+            ]
+        ]
+    , Html.tbody [] (List.map (itemRow address) list)
+    ]
+
+
 itemRow : Signal.Address Action -> Item -> Html
 itemRow address item =
   Html.tr
     []
     [ Html.td [] [ Html.text item.title ]
-    , Html.td [] [ Html.text item.artist ]
-    , Html.td [] [ Html.text item.album ]
+    , Html.td [] [ artistLink address item ]
+    , Html.td [] [ albumLink address item ]
     , Html.td [] [ playButton address item ]
     , Html.td [] [ queueButton (add Color.lightCharcoal) 32 address [ item ] ]
     ]
+
+
+artistLink : Signal.Address Action -> Item -> Html
+artistLink address item =
+  Html.a
+    [ Events.onClick address (GetItems ("albumartist is " ++ toString item.albumartist))
+    ]
+    [ Html.text item.artist ]
+
+
+albumLink : Signal.Address Action -> Item -> Html
+albumLink address item =
+  Html.a
+    [ Events.onClick address (GetItems ("album_id is " ++ toString item.album_id))
+    ]
+    [ Html.text item.album ]
 
 
 playButton : Signal.Address Action -> Item -> Html
@@ -107,20 +162,3 @@ playButton address item =
 addToQueue : Signal.Address Action -> List Item -> Attribute
 addToQueue address =
   (\items -> Events.onClick address (AddToQueue items))
-
-
-itemsTable : Signal.Address Action -> List Item -> Html
-itemsTable address list =
-  Html.table
-    [ Attributes.class "table table-hover col-md-12" ]
-    [ Html.thead
-        []
-        [ Html.tr
-            []
-            [ Html.th [] [ Html.text "Title" ]
-            , Html.th [] [ Html.text "Artist" ]
-            , Html.th [] [ Html.text "Album" ]
-            ]
-        ]
-    , Html.tbody [] (List.map (itemRow address) list)
-    ]
