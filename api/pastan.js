@@ -28,7 +28,10 @@ module.exports = function pastan(path) {
         });
 
     db.items.query.use(jsonqueryEngine());
+    db.items.ensureIndex('albumartist');
     db.items.ensureIndex('artist');
+    db.items.ensureIndex('title');
+    db.items.ensureIndex('album_id');
     db.items.ensureIndex('id');
 
     console.log("db ready.");
@@ -36,9 +39,11 @@ module.exports = function pastan(path) {
 };
 
 function encode(data) {
-    fields = ['albumartist', 'original_year', 'album_id', 'track'];
-    var a = fields.map(function(field) {
-        return data[field];
-    });
-    return bytewise.encode(a);
+    fields = [
+        data['albumartist'] || data['artist'],
+        data['original_year'] || 0,
+        data['album_id'] || 0,
+        data['track'] || 0
+    ];
+    return bytewise.encode(fields);
 }
