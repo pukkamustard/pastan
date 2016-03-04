@@ -2,9 +2,10 @@
   "name": "pastan",
   "version": "1.0.0",
   "description": "Your music library in the cloud.",
-  "main": "api/index.js",
+  "main": "server/index.js",
   "scripts": {
-    "start": "gulp serve",
+    "start": "gulp build && node server/index.js",
+    "dev": "gulp serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +25,7 @@
     "cors": "^2.7.1",
     "elm": "^0.16.0",
     "express": "^4.13.3",
+    "gulp-cli": "^1.2.1",
     "gulp-connect": "^3.1.0",
     "gulp-elm": "^0.2.0",
     "gulp-nodemon": "^2.0.6",

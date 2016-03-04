@@ -6,19 +6,18 @@ var shell = require('gulp-shell');
 
 gulp.task('nodemon', function() {
     nodemon({
-        script: 'api/index.js',
+        script: 'server/index.js',
         ext: 'js',
         ignore: 'client/**/*.*',
     });
 });
 
-// TODO: can't get livereload working properly
-// gulp.task('client:elm', function() {
-//     return gulp.src('client-src/Main.elm')
-//         .pipe(elm())
-//         .pipe(gulp.dest('client/'))
-//         .pipe(connect.reload());
-// });
+gulp.task('client:elm', function() {
+    return gulp.src('client-src/Main.elm')
+        .pipe(elm())
+        .pipe(gulp.dest('client/'))
+        .pipe(connect.reload());
+});
 
 gulp.task('elm-live', shell.task([
     'elm-live client-src/Main.elm --output client/Main.js'
@@ -44,4 +43,4 @@ gulp.task('watch', function() {
 // });
 
 gulp.task('serve', ['client:copy', 'watch', 'nodemon', 'elm-live']);
-// gulp.task('client', ['client:elm', 'client:copy']);
+gulp.task('build', ['client:elm', 'client:copy']);
