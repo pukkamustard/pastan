@@ -46,7 +46,7 @@ decodeList =
 
 fileUrl : Item -> String
 fileUrl i =
-  "http://localhost:8338/items/" ++ (toString i.id) ++ "/file"
+  "/api/items/" ++ (toString i.id) ++ "/file"
 
 
 compareItem : Item -> Item -> Order

@@ -21,7 +21,8 @@ type Action
 
 apiUrl : String
 apiUrl =
-  "http://localhost:8338/"
+  -- "http://localhost:8338/api/"
+  "/api/"
 
 
 getItems : String -> Effects Action

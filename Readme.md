@@ -51,9 +51,9 @@ export AWS_REGION='eu-central-1'
 export PASTAN_S3_BUCKET='name-of-bucket'
 ```
 
-Start the monster with: `npm run dev`. This will compile the elm sources to the `client` folder and watch for changes with elm-live as well as start the node.js service with nodemon.
+Start the monster with: `npm run dev` (or `npm start` without livereload).
 
-Point your browser to [http://192.168.99.1:8000/client](http://192.168.99.1:8000/client).
+Point your browser to [http://192.168.99.1:8338/](http://192.168.99.1:8338/).
 
 How it looks: ![Screenshot](doc/screenshots/items.png?raw=true)
 
