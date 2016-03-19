@@ -76,6 +76,7 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-app.listen(8338, function() {
-  console.log('Pastan listening on port 8338!');
+var port = process.env.PORT || 8338;
+app.listen(port, function() {
+  console.log('Pastan listening on port ' + port + '!');
 });
