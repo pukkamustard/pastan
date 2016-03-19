@@ -1,7 +1,6 @@
 .env
 elm-stuff
 node_modules
-client
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
