@@ -1,14 +1,16 @@
-module Model (..) where
+module Model exposing (Model, init)
 
 import Item exposing (Item)
-import Album exposing (Album)
-import Page exposing (Page)
 
 
 type alias Model =
-  { items : List Item
-  , query: String
-  , albums : List Album
-  , queue : List Item
-  , currentPage : Page
-  }
+    { items : List Item
+    , queue : List Item
+    }
+
+
+init : Model
+init =
+    { items = []
+    , queue = []
+    }

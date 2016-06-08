@@ -1,42 +1,16 @@
-module Main (..) where
+module Main exposing (..)
 
-import Effects exposing (Never, Effects)
-import Html exposing (Html)
-import StartApp exposing (start)
-import Task
-import Update exposing (update, Action)
-import View exposing (view)
-import Model exposing (Model)
-import Page exposing (Page(..))
+import Html.App as HApp
 
+import Model
+import Update
+import View
 
-app : StartApp.App Model
-app =
-  start
-    { init = init
-    , update = update
-    , view = view
-    , inputs = []
-    }
-
-
-init : ( Model, Effects Action )
-init =
-  ( { items = []
-    , query = ""
-    , albums = []
-    , queue = []
-    , currentPage = PageItems
-    }
-  , Effects.none
-  )
-
-
-main : Signal Html
+main : Program Never
 main =
-  app.html
-
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks
+    HApp.program
+        { init = ( Model.init, Update.init )
+        , update = Update.update
+        , subscriptions = Update.subscriptions
+        , view = View.view
+        }
