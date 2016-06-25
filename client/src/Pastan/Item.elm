@@ -1,7 +1,6 @@
-module Item exposing (..)
+module Pastan.Item exposing (..)
 
 import Json.Decode exposing ((:=))
-import Http
 
 
 type alias Item =
@@ -40,12 +39,10 @@ decode =
         ("albumartist" := Json.Decode.string)
 
 
-get : String -> String -> Platform.Task Http.Error (List Item)
-get apiUrl query =
-    Http.get (Json.Decode.list decode) (apiUrl ++ "items?q=" ++ query)
-
-
 fileUrl : Item -> String
 fileUrl i =
-    -- "http://localhost:8338/api/items/" ++ (toString i.id) ++ "/file"
-    "/api/items/" ++ (toString i.id) ++ "/file"
+    "http://localhost:8338/api/items/" ++ (toString i.id) ++ "/file"
+
+
+
+-- "/api/items/" ++ (toString i.id) ++ "/file"

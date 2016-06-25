@@ -5,6 +5,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+var depsGlob = 'src/**/*.elm';
+
 console.log('WEBPACK GO!');
 
 // detemine build env
@@ -26,7 +28,13 @@ var commonConfig = {
     },
 
     module: {
-        noParse: /\.elm$/
+        noParse: /\.elm$/,
+        loaders: [
+            {
+                test: /\.(eot|ttf|woff|woff2|svg)$/,
+                loader: 'file-loader'
+            }
+        ]
     },
 
     plugins: [new HtmlWebpackPlugin({template: 'src/index.html', inject: 'body', filename: 'index.html'})],
@@ -57,9 +65,12 @@ if (TARGET_ENV === 'development') {
                     exclude: [
                         /elm-stuff/, /node_modules/
                     ],
-                    loader: 'elm-hot!elm-webpack'
+                    loader: 'elm-hot!elm-webpack?verbose=true&warn=true&deps=' + depsGlob
                 }, {
                     test: /\.(css|scss)$/,
+                    exclude: [
+                        /elm-stuff/, /node_modules/
+                    ],
                     loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
                 }
             ]
@@ -83,7 +94,7 @@ if (TARGET_ENV === 'production') {
                     exclude: [
                         /elm-stuff/, /node_modules/
                     ],
-                    loader: 'elm-webpack'
+                    loader: 'elm-webpack?deps=' + depsGlob
                 }, {
                     test: /\.(css|scss)$/,
                     loader: ExtractTextPlugin.extract('style-loader', ['css-loader', 'postcss-loader', 'sass-loader'])
