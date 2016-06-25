@@ -1,5 +1,5 @@
 .items {
     tr:not(:first-child):hover {
-        background-color: lightgrey;
+        background-color: $background-color;
     }
 }

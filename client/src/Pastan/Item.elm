@@ -37,12 +37,3 @@ decode =
         ("album" := Json.Decode.string)
         ("album_id" := Json.Decode.int)
         ("albumartist" := Json.Decode.string)
-
-
-fileUrl : Item -> String
-fileUrl i =
-    "http://localhost:8338/api/items/" ++ (toString i.id) ++ "/file"
-
-
-
--- "/api/items/" ++ (toString i.id) ++ "/file"
