@@ -6,7 +6,7 @@ import Task
 
 --
 
-import Model exposing (Model)
+import Model exposing (Model, Mode(..))
 import Queue
 import Pastan
 import Pastan.Item exposing (Item)
@@ -18,6 +18,7 @@ type Msg
     | QueryResponse (List Item)
     | UpdateQuery String
     | AddToQueue (List Item)
+    | SetMode Mode
 
 
 init : Cmd Msg
@@ -51,6 +52,9 @@ update msg model =
 
         AddToQueue items ->
             ( { model | queue = Queue.add model.queue items }, Cmd.none )
+
+        SetMode mode ->
+            ( { model | mode = mode }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
