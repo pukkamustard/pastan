@@ -9,9 +9,7 @@ import FontAwesome
 
 --
 
-import Model exposing (Model, Mode(..))
-import Pastan
-import Queue exposing (Queue)
+import Model exposing (Model)
 import Update exposing (Msg(..))
 
 
@@ -20,8 +18,8 @@ browse model =
     let
         search =
             H.div [ HA.class "row" ]
-                [ H.a [ HA.class "u-pull-left one column", HE.onClick (SetMode Queue) ] [ FontAwesome.angle_up Color.darkBlue 30 ]
-                , H.form
+                [ -- H.a [ HA.class "u-pull-left one column", HE.onClick (SetMode Queue) ] [ FontAwesome.angle_up Color.darkBlue 30 ]
+                  H.form
                     [ HA.class "search"
                     , HA.action "#"
                     , HE.onSubmit Query
@@ -55,11 +53,8 @@ browse model =
                         , H.td [] [ H.text i.album ]
                         , H.td [] [ H.text i.title ]
                         , H.td []
-                            [ H.a [ HA.href (Pastan.fileUrl i), HA.target "_blank" ] [ FontAwesome.play Color.green 30 ]
-                            , if Queue.queued model.queue i then
-                                H.a [ HE.onClick (AddToQueue [ i ]) ] [ FontAwesome.plus Color.lightBlue 30 ]
-                              else
-                                H.a [ HE.onClick (AddToQueue [ i ]) ] [ FontAwesome.plus Color.darkBlue 30 ]
+                            [ -- H.a [ HA.href (Pastan.fileUrl i), HA.target "_blank" ] [ FontAwesome.play Color.green 30 ]
+                              H.a [ HE.onClick (Queue [ i ]) ] [ FontAwesome.plus Color.blue 30 ]
                             ]
                         ]
             in
@@ -68,30 +63,17 @@ browse model =
                     :: (model.items
                             |> List.map item
                        )
-
-        expand =
-            H.div [ HA.class "row" ]
-                [ H.a [ HA.class "u-pull-left", HE.onClick (SetMode Browse) ] [ FontAwesome.angle_down Color.darkBlue 30 ] ]
-
-        hide =
-            H.div [ HA.class "row" ]
-                [ H.a [ HA.class "u-pull-left", HE.onClick (SetMode Queue) ] [ FontAwesome.angle_up Color.darkBlue 30 ] ]
     in
         H.div
             [ HA.class "browse container"
             ]
-            (if model.mode == Browse then
-                [ search
-                , items
-                ]
-             else
-                [ expand
-                ]
-            )
+            [ search
+            , items
+            ]
 
 
-queue : Model -> Html Msg
-queue model =
+player : Model -> Html Msg
+player model =
     let
         items =
             let
@@ -114,20 +96,16 @@ queue model =
                 H.div [ HA.class "row" ]
                     [ H.table [ HA.class "u-full-width items" ]
                         <| header
-                        :: (model.queue |> List.map item)
+                        :: (model.player.queue |> List.map item)
                     ]
-
-        expand =
-            H.div [ HA.class "row" ]
-                [ H.a [ HA.class "u-pull-left", HE.onClick (SetMode Queue) ] [ FontAwesome.search Color.darkBlue 30 ] ]
     in
-        H.div [ HA.class "queue container" ]
-            (if model.mode == Queue then
-                [ items ]
-             else
-                [ items ]
-             -- [ expand ]
-            )
+        H.div [ HA.class "player container" ]
+            [ H.div [ HA.class "row" ]
+                [ H.a [ HE.onClick Play ] [ FontAwesome.play Color.green 50 ]
+                , H.a [ HE.onClick Stop ] [ FontAwesome.stop Color.red 50 ]
+                ]
+            , items
+            ]
 
 
 view : Model -> Html Msg
@@ -135,5 +113,5 @@ view model =
     H.div []
         [ H.div [ HA.class "browse" ] [ browse model ]
         , H.hr [] []
-        , H.div [ HA.class "queue" ] [ queue model ]
+        , H.div [ HA.class "queue" ] [ player model ]
         ]

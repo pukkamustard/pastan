@@ -1,26 +1,20 @@
-module Model exposing (Model,Mode(..), init)
+module Model exposing (Model, init)
 
 import Pastan.Item exposing (Item)
-import Queue exposing (Queue)
+import Player
 
 
 type alias Model =
     { items : List Item
-    , queue : Queue
     , query : String
-    , mode : Mode
+    , player : Player.Model
     }
 
-
-type Mode
-    = Browse
-    | Queue
 
 
 init : Model
 init =
     { items = []
-    , query = "artist is \"J Dilla\""
-    , queue = []
-    , mode = Queue
+    , query = "id is 8115"
+    , player = Player.init
     }
