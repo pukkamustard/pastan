@@ -76,7 +76,7 @@ In the `client/` folder:
     npm Install
   ```
 
-  - Start a webpack development server:
+- Start a webpack development server:
 
     ```
     npm start
@@ -91,6 +91,8 @@ Music streaming servers:
 - [CherryMusic](http://www.fomori.org/cherrymusic/)
 - [Sonerezh](https://www.sonerezh.bzh/)
 - [Subsonic](http://www.subsonic.org)
+- [koel](http://koel.phanan.net/)
+- [cloudtune](https://github.com/jkbrzt/cloudtunes)
 
 Pastan is different by using S3\. You don't need a server with x Gigabytes of storage, just use S3.
 
