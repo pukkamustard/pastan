@@ -1,0 +1,8 @@
+.browse {
+    margin-top: 2.5rem;
+    .items {
+        tr:not(:first-child):hover {
+            background-color: $background-color;
+        }
+    }
+}
