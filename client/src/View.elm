@@ -107,38 +107,6 @@ queue model =
             ]
 
 
-player : Player.Model -> Html Player.Msg
-player model =
-    let
-        playStop =
-            case model.state of
-                Player.Playing ->
-                    H.a [ HE.onClick Player.Stop ] [ FontAwesome.stop Color.red 50 ]
-
-                -- Player.Stopped ->
-                _ ->
-                    H.a [ HE.onClick Player.Play ] [ FontAwesome.play Color.green 50 ]
-
-        next =
-            H.a [ HE.onClick Player.Next ] [ FontAwesome.fast_forward Color.blue 50 ]
-
-        item =
-            case model.queue of
-                head :: _ ->
-                    H.div []
-                        [ H.h4 [] [ H.text (head.artist ++ " - " ++ head.title) ] ]
-
-                _ ->
-                    H.text ""
-    in
-        H.div [ HA.class "container" ]
-            [ H.div [ HA.class "row" ]
-                [ H.div [ HA.class "three columns" ]
-                    [ playStop, next ]
-                , H.div [ HA.class "nine columns" ]
-                    [ item ]
-                ]
-            ]
 
 
 view : Model -> Html Msg
@@ -149,6 +117,6 @@ view model =
             , H.div [ HA.class "queue" ] [ queue model ]
             ]
         , H.div [ HA.class "footer" ]
-            [ H.div [ HA.class "player" ] [ player model.player |> HApp.map PlayerMsg ]
+            [ H.div [ HA.class "player" ] [ Player.view model.player |> HApp.map PlayerMsg ]
             ]
         ]
