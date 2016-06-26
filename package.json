@@ -1,0 +1,21 @@
+{
+  "name": "pastan",
+  "version": "1.0.0",
+  "description": "beets in the cloud",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "cd client && npm install && npm run build && cd ../server/ && npm install",
+    "start": "cd server && npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pukkamustard/pastan.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pukkamustard/pastan/issues"
+  },
+  "homepage": "https://github.com/pukkamustard/pastan#readme"
+}

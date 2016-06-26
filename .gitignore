@@ -1,4 +1,5 @@
 .env
 elm-stuff
 node_modules
+client/build
 

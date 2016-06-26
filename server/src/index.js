@@ -11,7 +11,7 @@ app.use(logger(':date[iso] :url :status :res[content-length] :response-time'));
 
 
 // host static client
-app.use(express.static(__dirname + '/../client/'));
+app.use(express.static(__dirname + '/../../client/build/'));
 
 
 // Initialize db
