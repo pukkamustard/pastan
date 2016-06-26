@@ -11,6 +11,7 @@ import FontAwesome
 
 import Model exposing (Model)
 import Update exposing (Msg(..))
+import Player
 
 
 browse : Model -> Html Msg
@@ -96,13 +97,21 @@ player model =
                 H.div [ HA.class "row" ]
                     [ H.table [ HA.class "u-full-width items" ]
                         <| header
-                        :: (model.player.queue |> List.map item)
+                        :: (model.player.queue |> List.map (Player.toItem >> item))
                     ]
     in
         H.div [ HA.class "player container" ]
             [ H.div [ HA.class "row" ]
-                [ H.a [ HE.onClick Play ] [ FontAwesome.play Color.green 50 ]
-                , H.a [ HE.onClick Stop ] [ FontAwesome.stop Color.red 50 ]
+                [ case model.player.state of
+                    Player.Playing ->
+                        H.a [ HE.onClick Stop ] [ FontAwesome.stop Color.red 50 ]
+
+                    Player.Stopped ->
+                        H.a [ HE.onClick Play ] [ FontAwesome.play Color.green 50 ]
+
+                    Player.Stopping ->
+                        H.a [] [ FontAwesome.stop Color.lightRed 50 ]
+                , H.a [ HE.onClick Next ] [ FontAwesome.fast_forward Color.blue 50 ]
                 ]
             , items
             ]
@@ -114,4 +123,5 @@ view model =
         [ H.div [ HA.class "browse" ] [ browse model ]
         , H.hr [] []
         , H.div [ HA.class "queue" ] [ player model ]
+        , H.text (toString model.player.state)
         ]

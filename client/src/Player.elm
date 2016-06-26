@@ -12,8 +12,14 @@ import Pastan.Item exposing (Item)
 -- Model
 
 
+type QueueItem
+    = Loading Item
+    | ErrorLoading Item
+    | ItemLoaded Item
+
+
 type alias Model =
-    { queue : List Item
+    { queue : List QueueItem
     , state : State
     }
 
@@ -60,8 +66,13 @@ update msg model =
             let
                 loadCmd i =
                     load { id = i.id, url = Pastan.fileUrl i }
+
+                queue' =
+                    items
+                        |> List.map Loading
+                        |> List.append model.queue
             in
-                ( { model | queue = List.append model.queue items }
+                ( { model | queue = queue' }
                 , items
                     |> List.map loadCmd
                     |> Cmd.batch
@@ -69,11 +80,11 @@ update msg model =
 
         Play ->
             case model.queue of
-                head :: _ ->
+                (ItemLoaded head) :: _ ->
                     ( { model | state = Playing }, play head.id )
 
-                [] ->
-                    ( model, Cmd.none )
+                _ ->
+                    ( model, Stop |> Task.succeed |> Task.perform identity identity )
 
         Stop ->
             ( { model | state = Stopping }, stop () )
@@ -82,19 +93,32 @@ update msg model =
             let
                 id' =
                     id |> Debug.log "loaded id"
+
+                queue' =
+                    List.map
+                        (\qI ->
+                            if (toItem >> .id) qI == id then
+                                ItemLoaded (toItem qI)
+                            else
+                                qI
+                        )
+                        model.queue
             in
-                ( model, Cmd.none )
+                ( { model | queue = queue' }, Cmd.none )
 
         Ended ->
             case model.state of
                 Stopping ->
                     ( { model | state = Stopped }, Cmd.none )
+                        |> Debug.log "ended from stopping"
 
                 Playing ->
                     ( model, Next |> Task.succeed |> Task.perform identity identity )
+                        |> Debug.log "ended from playing"
 
                 _ ->
                     ( model, Cmd.none )
+                        |> Debug.log "ended from _"
 
         Next ->
             let
@@ -109,9 +133,27 @@ update msg model =
                 case model.queue of
                     head :: tail ->
                         ( { model | queue = tail }, play )
+                            |> Debug.log "next"
 
                     _ ->
                         ( model, Stop |> Task.succeed |> Task.perform identity identity )
+
+
+
+-- Helpers
+
+
+toItem : QueueItem -> Item
+toItem qI =
+    case qI of
+        Loading item ->
+            item
+
+        ErrorLoading item ->
+            item
+
+        ItemLoaded item ->
+            item
 
 
 

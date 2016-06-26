@@ -24,6 +24,7 @@ type Msg
     | Queue (List Item)
     | Play
     | Stop
+    | Next
     | PlayerMsg Player.Msg
 
 
@@ -69,6 +70,13 @@ update msg model =
         Stop ->
             ( model
             , PlayerMsg Player.Stop
+                |> Task.succeed
+                |> Task.perform identity identity
+            )
+
+        Next ->
+            ( model
+            , PlayerMsg Player.Next
                 |> Task.succeed
                 |> Task.perform identity identity
             )

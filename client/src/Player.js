@@ -11,32 +11,41 @@ module.exports = function(app) {
         var id = item.id;
         console.log('load: ', item);
 
-        var request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.responseType = 'arraybuffer';
+        if (!loadedBuffers[id]) {
 
-        request.onload = function() {
-            audioCtx.decodeAudioData(request.response, function(buffer) {
-                console.log("Loaded sound", url);
-                app.ports.loaded.send(id);
-                loadedBuffers[id] = buffer;
-            }, function(err) {
-                console.log("Failed to load " + url, err);
-            });
-        };
-        request.send();
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+
+            request.onload = function() {
+                audioCtx.decodeAudioData(request.response, function(buffer) {
+                    console.log("Loaded sound", url);
+                    app.ports.loaded.send(id);
+                    loadedBuffers[id] = buffer;
+                }, function(err) {
+                    console.log("Failed to load " + url, err);
+                });
+            };
+            request.send();
+        } else {
+            app.ports.loaded.send(id);
+        }
     });
 
     app.ports.stop.subscribe(function() {
+        console.log("Stop!");
         if (source) {
             source.stop();
             source = undefined;
+        } else {
+            app.ports.ended.send(true);
         }
     });
 
     app.ports.play.subscribe(function(id) {
         if (source) {
             source.stop();
+            source = undefined;
         }
         var buffer = loadedBuffers[id];
         if (buffer) {
