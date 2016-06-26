@@ -22,9 +22,6 @@ type Msg
     | QueryResponse (List Item)
     | UpdateQuery String
     | Queue (List Item)
-    | Play
-    | Stop
-    | Next
     | PlayerMsg Player.Msg
 
 
@@ -59,27 +56,6 @@ update msg model =
 
         Queue items ->
             ( model, PlayerMsg (Player.Queue items) |> Task.succeed |> Task.perform identity identity )
-
-        Play ->
-            ( model
-            , PlayerMsg Player.Play
-                |> Task.succeed
-                |> Task.perform identity identity
-            )
-
-        Stop ->
-            ( model
-            , PlayerMsg Player.Stop
-                |> Task.succeed
-                |> Task.perform identity identity
-            )
-
-        Next ->
-            ( model
-            , PlayerMsg Player.Next
-                |> Task.succeed
-                |> Task.perform identity identity
-            )
 
         PlayerMsg subMsg ->
             let

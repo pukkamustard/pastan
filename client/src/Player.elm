@@ -6,6 +6,15 @@ import Set exposing (Set)
 
 --
 
+import Html as H exposing (Html)
+import Color
+import Html.Attributes as HA
+import Html.Events as HE
+import FontAwesome
+
+
+--
+
 import Pastan
 import Pastan.Item exposing (Item)
 
@@ -22,14 +31,14 @@ type alias Model =
 
 type State
     = Playing
-    | Stopped
+    | Paused
 
 
 init : Model
 init =
     { queue = []
     , cache = Set.empty
-    , state = Stopped
+    , state = Paused
     }
 
 
@@ -40,18 +49,16 @@ init =
 type Msg
     = Queue (List Item)
     | Play
+    | Pause
     | Next
-    | Stop
       --
-    | Loaded Int
-    | Ended Bool
+    | Ended
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ loaded Loaded
-        , ended Ended
+        [ ended (always Ended)
         ]
 
 
@@ -60,59 +67,33 @@ update msg model =
     case msg of
         Queue items ->
             let
-                loadCmd i =
-                    load { id = i.id, url = Pastan.fileUrl i }
-
                 queue' =
                     items
                         |> List.append model.queue
             in
                 ( { model | queue = queue' }
-                , items
-                    |> List.map loadCmd
-                    |> Cmd.batch
+                , Cmd.none
                 )
 
         Play ->
             case model.queue of
                 head :: _ ->
-                    ( { model | state = Playing }, play head.id )
+                    ( { model | state = Playing }, play (Pastan.fileUrl head) )
 
                 _ ->
-                    ( model, Stop |> Task.succeed |> Task.perform identity identity )
+                    ( model, Pause |> Task.succeed |> Task.perform identity identity )
 
-        Stop ->
-            ( model, stop () )
+        Pause ->
+            ( { model | state = Paused }, pause () )
 
-        Loaded id ->
-            let
-                id' =
-                    id |> Debug.log "loaded id"
-
-                cache' =
-                    Set.insert id model.cache
-            in
-                ( { model | cache = cache' }, Cmd.none )
-
-        Ended manual ->
-            let
-                m =
-                    manual |> Debug.log "manual"
-
-                ( state', cmd ) =
-                    (if manual then
-                        ( Stopped, Cmd.none )
-                     else
-                        ( model.state, Next |> Task.succeed |> Task.perform identity identity )
-                    )
-                        |> Debug.log "Ended"
-            in
-                ( { model | state = state' }, cmd )
+        Ended ->
+            ( model, Next |> Task.succeed |> Task.perform identity identity )
+                |> Debug.log "Ended"
 
         Next ->
             case model.queue of
                 head :: [] ->
-                    ( { model | queue = [] }, Stop |> Task.succeed |> Task.perform identity identity )
+                    ( { model | queue = [], state = Paused }, pause () )
 
                 head :: tail ->
                     let
@@ -124,27 +105,56 @@ update msg model =
                     in
                         ( { model | queue = tail }, play )
 
+                [] ->
+                    ( model, Cmd.none )
+
+
+
+-- view
+
+
+view : Model -> Html Msg
+view model =
+    let
+        playStop =
+            case model.state of
+                Playing ->
+                    H.a [ HE.onClick Pause ] [ FontAwesome.pause Color.red 50 ]
+
                 _ ->
-                    ( model, Stop |> Task.succeed |> Task.perform identity identity )
+                    H.a [ HE.onClick Play ] [ FontAwesome.play Color.green 50 ]
+
+        next =
+            H.a [ HE.onClick Next ] [ FontAwesome.fast_forward Color.blue 50 ]
+
+        item =
+            case model.queue of
+                head :: _ ->
+                    H.div []
+                        [ H.h4 [] [ H.text (head.artist ++ " - " ++ head.title) ]
+                        ]
+
+                _ ->
+                    H.text ""
+    in
+        H.div [ HA.class "container" ]
+            [ H.div [ HA.class "row" ]
+                [ H.div [ HA.class "three columns" ]
+                    [ playStop, next ]
+                , H.div [ HA.class "nine columns" ]
+                    [ item ]
+                ]
+            ]
 
 
 
 -- Ports
 
 
-port load : { id : Int, url : String } -> Cmd msg
+port play : String -> Cmd msg
 
 
-port loaded : (Int -> msg) -> Sub msg
+port pause : () -> Cmd msg
 
 
-{-|
-Signal is True if stop was caused manually (not by song finishing)
--}
 port ended : (Bool -> msg) -> Sub msg
-
-
-port play : Int -> Cmd msg
-
-
-port stop : () -> Cmd msg
