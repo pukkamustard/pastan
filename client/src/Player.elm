@@ -1,6 +1,7 @@
 port module Player exposing (..)
 
 import Task
+import Set exposing (Set)
 
 
 --
@@ -12,27 +13,22 @@ import Pastan.Item exposing (Item)
 -- Model
 
 
-type QueueItem
-    = Loading Item
-    | ErrorLoading Item
-    | ItemLoaded Item
-
-
 type alias Model =
-    { queue : List QueueItem
+    { queue : List Item
+    , cache : Set Int
     , state : State
     }
 
 
 type State
     = Playing
-    | Stopping
     | Stopped
 
 
 init : Model
 init =
     { queue = []
+    , cache = Set.empty
     , state = Stopped
     }
 
@@ -48,14 +44,14 @@ type Msg
     | Stop
       --
     | Loaded Int
-    | Ended
+    | Ended Bool
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ loaded Loaded
-        , ended (always Ended)
+        , ended Ended
         ]
 
 
@@ -69,7 +65,6 @@ update msg model =
 
                 queue' =
                     items
-                        |> List.map Loading
                         |> List.append model.queue
             in
                 ( { model | queue = queue' }
@@ -80,80 +75,57 @@ update msg model =
 
         Play ->
             case model.queue of
-                (ItemLoaded head) :: _ ->
+                head :: _ ->
                     ( { model | state = Playing }, play head.id )
 
                 _ ->
                     ( model, Stop |> Task.succeed |> Task.perform identity identity )
 
         Stop ->
-            ( { model | state = Stopping }, stop () )
+            ( model, stop () )
 
         Loaded id ->
             let
                 id' =
                     id |> Debug.log "loaded id"
 
-                queue' =
-                    List.map
-                        (\qI ->
-                            if (toItem >> .id) qI == id then
-                                ItemLoaded (toItem qI)
-                            else
-                                qI
-                        )
-                        model.queue
+                cache' =
+                    Set.insert id model.cache
             in
-                ( { model | queue = queue' }, Cmd.none )
+                ( { model | cache = cache' }, Cmd.none )
 
-        Ended ->
-            case model.state of
-                Stopping ->
-                    ( { model | state = Stopped }, Cmd.none )
-                        |> Debug.log "ended from stopping"
+        Ended manual ->
+            let
+                m =
+                    manual |> Debug.log "manual"
 
-                Playing ->
-                    ( model, Next |> Task.succeed |> Task.perform identity identity )
-                        |> Debug.log "ended from playing"
-
-                _ ->
-                    ( model, Cmd.none )
-                        |> Debug.log "ended from _"
+                ( state', cmd ) =
+                    (if manual then
+                        ( Stopped, Cmd.none )
+                     else
+                        ( model.state, Next |> Task.succeed |> Task.perform identity identity )
+                    )
+                        |> Debug.log "Ended"
+            in
+                ( { model | state = state' }, cmd )
 
         Next ->
-            let
-                play =
-                    case model.state of
-                        Playing ->
-                            Play |> Task.succeed |> Task.perform identity identity
+            case model.queue of
+                head :: [] ->
+                    ( { model | queue = [] }, Stop |> Task.succeed |> Task.perform identity identity )
 
-                        _ ->
-                            Cmd.none
-            in
-                case model.queue of
-                    head :: tail ->
+                head :: tail ->
+                    let
+                        play =
+                            if model.state == Playing then
+                                Play |> Task.succeed |> Task.perform identity identity
+                            else
+                                Cmd.none
+                    in
                         ( { model | queue = tail }, play )
-                            |> Debug.log "next"
 
-                    _ ->
-                        ( model, Stop |> Task.succeed |> Task.perform identity identity )
-
-
-
--- Helpers
-
-
-toItem : QueueItem -> Item
-toItem qI =
-    case qI of
-        Loading item ->
-            item
-
-        ErrorLoading item ->
-            item
-
-        ItemLoaded item ->
-            item
+                _ ->
+                    ( model, Stop |> Task.succeed |> Task.perform identity identity )
 
 
 
@@ -166,6 +138,9 @@ port load : { id : Int, url : String } -> Cmd msg
 port loaded : (Int -> msg) -> Sub msg
 
 
+{-|
+Signal is True if stop was caused manually (not by song finishing)
+-}
 port ended : (Bool -> msg) -> Sub msg
 
 

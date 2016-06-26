@@ -2,4 +2,22 @@
 @import "normalize.css";
 @import "skeleton.css";
 @import "browse.scss";
+@import "queue.scss";
 @import "player.scss";
+.page {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    .content {
+        order: 1;
+        flex-grow: 1;
+        overflow-x: scroll;
+    }
+    .footer {
+        order: 2;
+        background-color: black;
+        color: white;
+        padding: 10px 0 10px 0;
+        width: 100%;
+    }
+}

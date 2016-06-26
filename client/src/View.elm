@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Color
 import Html as H exposing (Html)
+import Html.App as HApp
 import Html.Attributes as HA
 import Html.Events as HE
 import FontAwesome
@@ -73,8 +74,8 @@ browse model =
             ]
 
 
-player : Model -> Html Msg
-player model =
+queue : Model -> Html Msg
+queue model =
     let
         items =
             let
@@ -97,31 +98,57 @@ player model =
                 H.div [ HA.class "row" ]
                     [ H.table [ HA.class "u-full-width items" ]
                         <| header
-                        :: (model.player.queue |> List.map (Player.toItem >> item))
+                        :: (model.player.queue |> List.map item)
                     ]
     in
-        H.div [ HA.class "player container" ]
+        H.div [ HA.class "queue container" ]
             [ H.div [ HA.class "row" ]
-                [ case model.player.state of
-                    Player.Playing ->
-                        H.a [ HE.onClick Stop ] [ FontAwesome.stop Color.red 50 ]
+                [ items ]
+            ]
 
-                    Player.Stopped ->
-                        H.a [ HE.onClick Play ] [ FontAwesome.play Color.green 50 ]
 
-                    Player.Stopping ->
-                        H.a [] [ FontAwesome.stop Color.lightRed 50 ]
-                , H.a [ HE.onClick Next ] [ FontAwesome.fast_forward Color.blue 50 ]
+player : Player.Model -> Html Player.Msg
+player model =
+    let
+        playStop =
+            case model.state of
+                Player.Playing ->
+                    H.a [ HE.onClick Player.Stop ] [ FontAwesome.stop Color.red 50 ]
+
+                -- Player.Stopped ->
+                _ ->
+                    H.a [ HE.onClick Player.Play ] [ FontAwesome.play Color.green 50 ]
+
+        next =
+            H.a [ HE.onClick Player.Next ] [ FontAwesome.fast_forward Color.blue 50 ]
+
+        item =
+            case model.queue of
+                head :: _ ->
+                    H.div []
+                        [ H.h4 [] [ H.text (head.artist ++ " - " ++ head.title) ] ]
+
+                _ ->
+                    H.text ""
+    in
+        H.div [ HA.class "container" ]
+            [ H.div [ HA.class "row" ]
+                [ H.div [ HA.class "three columns" ]
+                    [ playStop, next ]
+                , H.div [ HA.class "nine columns" ]
+                    [ item ]
                 ]
-            , items
             ]
 
 
 view : Model -> Html Msg
 view model =
-    H.div []
-        [ H.div [ HA.class "browse" ] [ browse model ]
-        , H.hr [] []
-        , H.div [ HA.class "queue" ] [ player model ]
-        , H.text (toString model.player.state)
+    H.div [ HA.class "page" ]
+        [ H.div [ HA.class "content" ]
+            [ H.div [ HA.class "browse" ] [ browse model ]
+            , H.div [ HA.class "queue" ] [ queue model ]
+            ]
+        , H.div [ HA.class "footer" ]
+            [ H.div [ HA.class "player" ] [ player model.player |> HApp.map PlayerMsg ]
+            ]
         ]

@@ -35,6 +35,9 @@ module.exports = function(app) {
     app.ports.stop.subscribe(function() {
         console.log("Stop!");
         if (source) {
+            source.onended = function() {
+                app.ports.ended.send(true);
+            }
             source.stop();
             source = undefined;
         } else {
@@ -54,7 +57,7 @@ module.exports = function(app) {
             source.connect(audioCtx.destination);
             source.buffer = buffer;
             source.onended = function() {
-                app.ports.ended.send(true);
+                app.ports.ended.send(false);
             }
             source.start(0);
         }
