@@ -1,28 +1,32 @@
 # pastan
+
 beets in the cloud.
 
 This is the idea:
+
 - Sync your local [beets](http://beets.io/) library to the cloud (Amazon S3).
 - Run a small web service to access your library in the cloud.
 - Use a web interface to listen to music from anywhere.
 
 This is done with following components:
-- Beets plugin: The plugin syncs your local library and a copy of the database to an Amazon S3 bucket. See `beets/` folder.
-- Web service: A node.js application hosts a REST API allowing access your library from S3. This runs somewhere in the cloud. See `server/` folder.
-- An [elm](http://elm-lang.org/) web client that allows pretty access to your library in the cloud. See `client-src/` folder.
 
-Current limitations are:
-- No audio playback trough web client. You can create a playlist and download it as an m3u for playback.
+- Beets plugin: The plugin syncs your local library and a copy of the database to an Amazon S3 bucket. See `beets/` folder.
+- Web service: A node.js application hosts a REST API allowing access your library from S3\. This runs somewhere in the cloud. See `server/` folder.
+- An [elm](http://elm-lang.org/) web client that allows pretty access to your library in the cloud. See `client/` folder.
 
 ## Getting started
+
 ### Installation
+
 Clone the repo.
 
 ### Amazon S3
-You need to create an S3 bucket and access keys.
+
+You need to create an S3 bucket and access keys. Enable CORS.
 
 ### Beets plugin
-Add the folder `beets/` to your `PYTHONPATH` (this will allow beets to find the plugin). For more information see: [http://beets.readthedocs.org/en/v1.3.17/dev/plugins.html](http://beets.readthedocs.org/en/v1.3.17/dev/plugins.html).
+
+Add the folder `beets/` to your `PYTHONPATH` (this will allow beets to find the plugin). For more information see: <http://beets.readthedocs.org/en/v1.3.17/dev/plugins.html>.
 
 Add the `pastan` plugin and configurations to your beets `config.yaml`;
 
@@ -39,47 +43,64 @@ pastan:
 
 To sync run the command `beet pastan`.
 
-### Pastan server and client
-Run the command `npm install` to install dependencies.
+### Web service
 
-Set environment variables:
+In the `server/` folder:
 
-```
-export AWS_ACCESS_KEY_ID='your aws acces'
-export AWS_SECRET_ACCESS_KEY='secret'
-export AWS_REGION='eu-central-1'
-export PASTAN_S3_BUCKET='name-of-bucket'
-```
+- Install dependencies:
 
-Start the monster with: `npm run dev` (or `npm start` without livereload).
+  ```
+   npm install
+  ```
 
-Point your browser to [http://192.168.99.1:8338/](http://192.168.99.1:8338/).
+- Set environment variables:
 
-How it looks: ![Screenshot](doc/screenshots/items.png?raw=true)
+  ```
+    export AWS_ACCESS_KEY_ID='your aws acces'
+    export AWS_SECRET_ACCESS_KEY='secret'
+    export AWS_REGION='eu-central-1'
+    export PASTAN_S3_BUCKET='name-of-bucket'
+  ```
 
-## Todo
-Server:
-- Full text search.
-- Host web client as static content
+- Start the server with `npm start`.
 
-Web frontend:
-- play audio (currently it is only able to download an M3U)
-- cover art
-- proper styling
+The server will be running at <http://localhost:8338/>.
+
+### Client
+
+In the `client/` folder:
+
+- Install dependencies:
+
+  ```
+    npm Install
+  ```
+
+  - Start a webpack development server:
+
+    ```
+    npm start
+    ```
+
+The web interface is now accessible on <http://localhost:8088>.
 
 ## Related Projects and Ideas
+
 Music streaming servers:
+
 - [CherryMusic](http://www.fomori.org/cherrymusic/)
 - [Sonerezh](https://www.sonerezh.bzh/)
 - [Subsonic](http://www.subsonic.org)
 
-Pastan is different by using S3. You don't need a server with x Gigabytes of storage, just use S3.
+Pastan is different by using S3\. You don't need a server with x Gigabytes of storage, just use S3.
 
 Beets:
+
 - [beets](http://beets.io/)
-- beets web plugin: [http://beets.readthedocs.org/en/v1.3.17/plugins/web.html](http://beets.readthedocs.org/en/v1.3.17/plugins/web.html)
-- There has been some discussion on designing new web API for beets: [https://github.com/beetbox/beets/issues/736](https://github.com/beetbox/beets/issues/736)
+- beets web plugin: <http://beets.readthedocs.org/en/v1.3.17/plugins/web.html>
+- There has been some discussion on designing new web API for beets: <https://github.com/beetbox/beets/issues/736>
 
 Other:
+
 - [Aura](https://github.com/beetbox/aura): REST API for music libraries
 - [Tomahawk](https://www.tomahawk-player.org/): A music player that is able to connect with different kind of (online) sources. I tried to write a Tomahawk plugin. Will have to try again.
