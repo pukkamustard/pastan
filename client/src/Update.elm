@@ -21,15 +21,14 @@ type Msg
     | QueryFailure Http.Error
     | QueryResponse (List Item)
     | UpdateQuery String
+    | SelectAlbum Item
     | Queue (List Item)
     | PlayerMsg Player.Msg
 
 
 init : Cmd Msg
 init =
-    Query
-        |> Task.succeed
-        |> Task.perform identity identity
+    Cmd.none
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -56,6 +55,9 @@ update msg model =
 
         Queue items ->
             ( model, PlayerMsg (Player.Queue items) |> Task.succeed |> Task.perform identity identity )
+
+        SelectAlbum item ->
+            ( { model | query = ("album_id is " ++ (toString item.album_id)) }, Query |> Task.succeed |> Task.perform identity identity )
 
         PlayerMsg subMsg ->
             let

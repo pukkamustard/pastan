@@ -27,13 +27,14 @@ browse model =
                     , HE.onSubmit Query
                     ]
                     [ H.input
-                        [ HA.class "nine columns"
+                        [ HA.class "eight columns"
                         , HA.placeholder "Search"
                         , HA.type' "text"
                         , HE.onInput UpdateQuery
                         ]
                         []
                     , H.button [ HA.class "two columns", HA.type' "submit" ] [ H.text "Search" ]
+                    , H.button [ HE.onClick (Queue model.items), HA.class "two columns", HA.type' "button" ] [ H.text "Queue all" ]
                     ]
                 ]
 
@@ -52,11 +53,15 @@ browse model =
                 item i =
                     H.tr [ HA.class "item" ]
                         [ H.td [] [ H.text i.artist ]
-                        , H.td [] [ H.text i.album ]
+                        , H.td [] [ H.a [ HE.onClick (SelectAlbum i) ] [ H.text i.album ] ]
                         , H.td [] [ H.text i.title ]
                         , H.td []
-                            [ -- H.a [ HA.href (Pastan.fileUrl i), HA.target "_blank" ] [ FontAwesome.play Color.green 30 ]
-                              H.a [ HE.onClick (Queue [ i ]) ] [ FontAwesome.plus Color.blue 30 ]
+                            [ H.a [ HE.onClick (Queue [ i ]) ]
+                                [ if Player.inQueue model.player i then
+                                    FontAwesome.check Color.green 30
+                                  else
+                                    FontAwesome.plus Color.blue 30
+                                ]
                             ]
                         ]
             in
@@ -105,8 +110,6 @@ queue model =
             [ H.div [ HA.class "row" ]
                 [ items ]
             ]
-
-
 
 
 view : Model -> Html Msg

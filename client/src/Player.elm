@@ -110,6 +110,15 @@ update msg model =
 
 
 
+--  Helpers
+
+
+inQueue : Model -> Item -> Bool
+inQueue model item =
+    List.member item model.queue
+
+
+
 -- view
 
 

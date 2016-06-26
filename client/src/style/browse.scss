@@ -1,6 +1,9 @@
 .browse {
     margin-top: 2.5rem;
     .items {
+        a {
+            color: black;
+        }
         tr:not(:first-child):hover {
             background-color: $background-color;
         }
